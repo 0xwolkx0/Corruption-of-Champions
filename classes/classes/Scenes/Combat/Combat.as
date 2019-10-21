@@ -1,4 +1,4 @@
-﻿package classes.Scenes.Combat {
+package classes.Scenes.Combat {
 import classes.BaseContent;
 import classes.BodyParts.Arms;
 import classes.BodyParts.Ears;
@@ -8035,4 +8035,4 @@ public function scalingBonusLibido():Number {
 	return inteWisLibScale(player.lib);
 }
 }
-}
+}

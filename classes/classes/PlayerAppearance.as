@@ -812,17 +812,17 @@ public class PlayerAppearance extends BaseContent {
 			else outputText(" In your hair is " + player.headjewelryName + ".");
 		}
 		if (player.necklaceName != "nothing")
-			outputText(" On your neck is " + player.necklaceName + ".");
+			outputText(" On your neck is a " + player.necklaceName + ".");
 		if (player.hasKeyItem("Fenrir Collar") >= 0) {
 			if (player.necklaceName != "nothing") outputText(" Benath it is ");
 			else outputText(" On your neck is ");
-			outputText("Fenrir spiked Collar its chain still hanging down from it and clinking with an ominous metallic sound as you walk around.");
+			outputText("a Fenrir spiked Collar its chain still hanging down from it and clinking with an ominous metallic sound as you walk around.");
 		}
 		if (player.jewelryName != "nothing") {
-			outputText(" At one of your right hand fingers is " + player.jewelryName + "");
-			if (player.jewelryName3 != "nothing") outputText(" and on another finger is " + player.jewelryName3 + "");
-			if (player.jewelryName2 != "nothing") outputText(", on one of your left hand fingers is " + player.jewelryName2 + "");
-			if (player.jewelryName4 != "nothing") outputText(" and on another finger is " + player.jewelryName4 + "");
+			outputText(" At one of your right hand fingers is a " + player.jewelryName + "");
+			if (player.jewelryName3 != "nothing") outputText(" and on another finger is a " + player.jewelryName3 + "");
+			if (player.jewelryName2 != "nothing") outputText(", on one of your left hand fingers is a " + player.jewelryName2 + "");
+			if (player.jewelryName4 != "nothing") outputText(" and on another finger is a " + player.jewelryName4 + "");
 			outputText(".");
 		}
 		outputText("</b>");
@@ -1040,8 +1040,10 @@ public class PlayerAppearance extends BaseContent {
 			outputText("  " + Num2Text(player.legCount) + " digitigrade legs form below your [hips], ending in cloven hooves.");
 		else if (player.lowerBody == LowerBody.MANTIS)
 			outputText("  Your " + num2Text(player.legCount) + " legs are covered in a shimmering green, insectile carapace up to mid-thigh, looking more like a set of 'fuck-me-boots' than exoskeleton.");
-		else if (player.lowerBody == LowerBody.SHARK)
+		else if (player.lowerBody == LowerBody.SHARK && !player.isTaur())
 			outputText("  Your " + num2Text(player.legCount) + " legs are mostly human save for the webing between your toes.");
+		else if (player.lowerBody == LowerBody.SHARK && player.isTaur())
+			outputText("  Your " + num2Text(player.legCount) + " legs ends up  with three toed scaled paws with webing between the toes and an even larger webbing running en the entire lenght. It looks like the body of some kind of sea monster.");
 		else if (player.lowerBody == LowerBody.GARGOYLE) {
 			outputText("  Your " + num2Text(player.legCount) + " digitigrade ");
 			if (flags[kFLAGS.GARGOYLE_BODY_MATERIAL] == 1) outputText("marble");
@@ -1088,6 +1090,8 @@ public class PlayerAppearance extends BaseContent {
 			outputText("  Your " + num2Text(player.legCount) + " digitigrade mouse legs are covered in flames up to your knee. Your kicks leave a vicious burn on those who cross you, which they are sure to remember.");
 		else if (player.lowerBody == LowerBody.BEAR)
 			outputText("  Your " + num2Text(player.legCount) + " legs are covered with [skin coat.color] fur. They end with powerful bear-like paws.");
+		else if (player.lowerBody == LowerBody.HYDRA)
+			outputText("  Below your waist your flesh is fused together into the body of a snake which split into " + Num2Text(player.tailCount) + " " + Measurements.footInchOrMetres(player.tallness * 2) + " long serpentine coils each ending with a snake head. Your many heads tend to hiss when you are in pain or angry.");
 		if (player.findPerk(PerkLib.Incorporeality) >= 0)
 			outputText("  Of course, your [legs] are partially transparent due to their ghostly nature."); // isn't goo transparent anyway?
 	}
@@ -1325,6 +1329,8 @@ public class PlayerAppearance extends BaseContent {
 			if (player.skin.coverage >= Skin.COVERAGE_MEDIUM) outputText(" up to your shoulder and neck");
 			outputText(". They end with a pair of powerful five-toed bear-like paws armed with lethal claws.");
 		}
+		else if (armType == Arms.GOO)
+			outputText("  While human in shape, your constantly dripping arms are actually liquid, allowing you to shape them to your convenience.");
 		else if (player.wings.type == Wings.BAT_ARM)
 			outputText("  The bones in your arms are thin and light, as if made of only cartilage, granting you the ability to take flight. Instead of the five fingers you started out with, you now have three that are both larger and stronger. They allow you to hold various items even with your abnormal hands, albeit at the cost of preventing flight while doing so and making some things a little more awkward to grip.");
 	}
@@ -1352,6 +1358,9 @@ public class PlayerAppearance extends BaseContent {
 		}
 		if (player.rearBody.type == RearBody.DISPLACER_TENTACLES) {
 			outputText("  On your back grows two tentacles with a pair of thick, heavy feelers. You use them to suck your victims dry of their milk loads as you pump them full of your lewd venom.");
+		}
+		if (player.rearBody.type == RearBody.METAMORPHIC_GOO) {
+			outputText("  Since your body is made of malleable goo you can reshape your form however you want to gain tentacle or any limb or appendage whenever you need one either for combat or for fun.");
 		}
 	}
 	public function describeWings():void {
@@ -1612,6 +1621,9 @@ public class PlayerAppearance extends BaseContent {
 		else if(eyeType == Eyes.BEAR){
 			outputText("  Your eyes are human save for your golden pupils closer to those of a bear.");
 		}
+		else if(eyeType == Eyes.DISPLACER){
+			outputText("  Your eyes are similar to those of a cat, with slit pupils. However, their black sclera dismiss any links to the regular felines clearly identifying you to something else.");
+		}
 		else outputText("  Your eyes are [eyecolor].");
 	}
 	public function describeHairAndEars():void {
@@ -1623,10 +1635,10 @@ public class PlayerAppearance extends BaseContent {
 				outputText("  You have no hair, only a thin layer of fur atop of your head.  ");
 			else {
 				outputText("  You are totally bald, showing only shiny " + player.skinTone + " [skin.type]");
-				if(player.skin.hasMagicalTattoo()) outputText(" covered with magical tattoo");
-				else if(player.skin.hasBattleTattoo()) outputText(" covered with battle tattoo");
+				if(player.skin.hasMagicalTattoo()) outputText(" covered with [skin color2] magical tattoo");
+				else if(player.skin.hasBattleTattoo()) outputText(" covered with [skin color2] battle tattoo");
 				else if(player.skin.hasLightningShapedTattoo()) outputText(" covered with a few glowing lightning tattoos");
-				else if(player.skin.hasScarShapedTattoo()) outputText(" covered with a few scar tattoos");
+				else if(player.skin.hasScarShapedTattoo()) outputText(" covered with a few [skin color2] scar tattoos");
 				outputText(" where your hair should be.");
 			}
 			if(earType == Ears.HORSE)
@@ -1639,6 +1651,8 @@ public class PlayerAppearance extends BaseContent {
 				outputText("  A pair of round, floppy cow ears protrude from the sides of your skull.");
 			else if(earType == Ears.ELFIN)
 				outputText("  A pair of large pointy ears stick out from your skull.");
+			else if(earType == Ears.SHARK)
+				outputText("  A pair of fin like ears with fins stick out from your skull. They allow you to hear every sound with perfect clarity while underwater");
 			else if(earType == Ears.CAT)
 				outputText("  A pair of cute, fuzzy cat ears have sprouted from the top of your head.");
 			else if(earType == Ears.PIG)
@@ -1704,6 +1718,9 @@ public class PlayerAppearance extends BaseContent {
 			}
 			if (earType == Ears.PANDA){
 				outputText("  A pair of two round fuzzy panda ears covered with black fur just like a panda and alert to sound stick out from your skull.");
+			}
+			if (earType == Ears.DISPLACER){
+				outputText("  A large long furry ears atop your head, always perked up to catch any stray sound.");
 			}
 			//</mod>
 			if (player.gills.type == Gills.FISH)
@@ -1798,8 +1815,11 @@ public class PlayerAppearance extends BaseContent {
 			if (earType == Ears.BEAR){
 				outputText(" The [hair] on your head is parted by a pair of two round fuzzy bear ears covered with [skin coat.color] and alert to sound.");
 			}
-			if (earType == Ears.BEAR){
+			if (earType == Ears.PANDA){
 				outputText(" The [hair] on your head is parted by a pair of two round fuzzy panda ears covered with black fur just like a panda and alert to sound.");
+			}
+			if (earType == Ears.DISPLACER){
+				outputText(" The [hair] on your head is parted by large long furry ears atop your head, always perked up to catch any stray sound.");
 			}
 			//</mod>
 			if(player.antennae.type == Antennae.MANTIS)
@@ -1830,11 +1850,11 @@ public class PlayerAppearance extends BaseContent {
 			if (skin.coverage<Skin.COVERAGE_COMPLETE) {
 				outputText("  Your face is human in shape and structure, with [skin]"+skinAndSomething);
 				if (skin.hasMagicalTattoo()) {
-					outputText(" covered with magical tattoo");
+					outputText(" covered with [skin color2] magical tattoo");
 					odd++;
 				}
 				else if (skin.hasBattleTattoo()) {
-					outputText(" covered with battle tattoo");
+					outputText(" covered with [skin color2] battle tattoo");
 					odd++;
 				}
 				else if (skin.hasLightningShapedTattoo()) {
@@ -1842,7 +1862,7 @@ public class PlayerAppearance extends BaseContent {
 					odd++;
 				}
 				else if (skin.hasScarShapedTattoo()) {
-					outputText(" covered with a few scar tattoos");
+					outputText(" covered with a few [skin color2] scar tattoos");
 					odd++;
 				}
 				if (skin.isCoverLowMid()) {
@@ -1852,11 +1872,24 @@ public class PlayerAppearance extends BaseContent {
 				}
 			} else if (skin.hasCoatOfType(Skin.FUR)) {
 				odd++;
-				outputText("  Under your [skin coat] you have a human-shaped head with [skin base]"+skinAndSomething);
+				outputText("  Under your [skin coat]");
+				if (skin.coat.pattern == Skin.PATTERN_TIGER_STRIPES) {
+					outputText(" with [skin coat.color2] stripes");
+					odd++;
+				}
+				outputText("  you have a human-shaped head with [skin base]"+skinAndSomething);
 			} else if (skin.hasCoat() && !skinAndSomething) {
 				odd++;
 				outputText("  Your face is fairly human in shape, but is covered in [skin coat]");
+				if (skin.coat.pattern == Skin.PATTERN_TIGER_STRIPES) {
+					outputText(" with [skin coat.color2] stripes");
+					odd++;
+				}
 			} else outputText("  Your face is human in shape and structure, with [skin full]"+skinAndSomething);
+				if (skin.coat.pattern == Skin.PATTERN_TIGER_STRIPES) {
+					outputText(" and [skin coat.color2] stripes");
+					odd++;
+				}
 			outputText(".");
 
 			if (faceType == Face.SHARK_TEETH)
@@ -1902,10 +1935,10 @@ public class PlayerAppearance extends BaseContent {
 				outputText("  Your face is human in shape and structure, with [skin bases");
 				if (InCollection(skin.base.color, "ebony", "black"))
 					outputText(", though with your dusky hue, the black raccoon mask you sport isn't properly visible.");
-				else if (skin.hasMagicalTattoo()) outputText(" covered with magical tattoo, though it is decorated with a sly-looking raccoon mask over your eyes.");
-				else if(skin.hasBattleTattoo()) outputText(" covered with battle tattoo, though it is decorated with a sly-looking raccoon mask over your eyes.");
+				else if (skin.hasMagicalTattoo()) outputText(" covered with [skin color2] magical tattoo, though it is decorated with a sly-looking raccoon mask over your eyes.");
+				else if(skin.hasBattleTattoo()) outputText(" covered with [skin color2] battle tattoo, though it is decorated with a sly-looking raccoon mask over your eyes.");
 				else if(skin.hasLightningShapedTattoo()) outputText(" covered with a few glowing lightning tattoos, though it is decorated with a sly-looking raccoon mask over your eyes.");
-				else if(skin.hasScarShapedTattoo()) outputText(" covered with a few scar tattoos, though it is decorated with a sly-looking raccoon mask over your eyes.");
+				else if(skin.hasScarShapedTattoo()) outputText(" covered with a few [skin color2] scar tattoos, though it is decorated with a sly-looking raccoon mask over your eyes.");
 				else outputText(", though it is decorated with a sly-looking raccoon mask over your eyes.");
 			} else { //appearance furscales
 				//(black/midnight furscales)
@@ -1921,13 +1954,13 @@ public class PlayerAppearance extends BaseContent {
 			if (player.hasPlainSkinOnly()) {
 				outputText("  It looks a bit strange with only the skin and no fur.");
 			} else if (skin.hasMagicalTattoo()) {
-				outputText("  It looks a bit strange with only the skin covered with magical tattoo and no fur.");
+				outputText("  It looks a bit strange with only the skin covered with [skin color2] magical tattoo and no fur.");
 			} else if (skin.hasBattleTattoo()) {
-				outputText("  It looks a bit strange with only the skin covered with battle tattoo and no fur.");
+				outputText("  It looks a bit strange with only the skin covered with [skin color2] battle tattoo and no fur.");
 			} else if (skin.hasLightningShapedTattoo()) {
 				outputText("  It looks a bit strange with only the skin covered with a few glowing lightning tattoos and no fur.");
 			} else if (skin.hasScarShapedTattoo()) {
-				outputText("  It looks a bit strange with only the skin covered with a few scar tattoos and no fur.");
+				outputText("  It looks a bit strange with only the skin covered with a few [skin color2] scar tattoos and no fur.");
 			} else if (player.hasScales()) {
 				outputText("  The presence of said scales gives your visage an eerie look, more reptile than mammal.");
 			} else if (skin.hasChitin()) {
@@ -1939,13 +1972,13 @@ public class PlayerAppearance extends BaseContent {
 			if (!player.hasCoat()) {
 				outputText("  Oddly enough, there's no fur on your animalistic muzzle, just [skin coat].");
 			} else if (skin.hasMagicalTattoo()) {
-				outputText("  Oddly enough, there's no fur on your animalistic muzzle, just [skin coat] covered with magical tattoo.");
+				outputText("  Oddly enough, there's no fur on your animalistic muzzle, just [skin coat] covered with [skin color2] magical tattoo.");
 			} else if (skin.hasBattleTattoo()) {
-				outputText("  Oddly enough, there's no fur on your animalistic muzzle, just [skin coat] covered with battle tattoo.");
+				outputText("  Oddly enough, there's no fur on your animalistic muzzle, just [skin coat] covered with [skin color2] battle tattoo.");
 			} else if (skin.hasLightningShapedTattoo()) {
 				outputText("  Oddly enough, there's no fur on your animalistic muzzle, just [skin coat] covered with a few glowing lightning tattoos.");
 			} else if (skin.hasScarShapedTattoo()) {
-				outputText("  Oddly enough, there's no fur on your animalistic muzzle, just [skin coat] covered with a few scar tattoos.");
+				outputText("  Oddly enough, there's no fur on your animalistic muzzle, just [skin coat] covered with a few [skin color2] scar tattoos.");
 			} else if (player.hasFullCoatOfType(Skin.FUR)) {
 				outputText("  A coat of [skin coat] decorates your muzzle.");
 			} else if (skin.isCoverLowMid()) {
@@ -1963,10 +1996,10 @@ public class PlayerAppearance extends BaseContent {
 		if (faceType == Face.ANIMAL_TOOTHS) {
 			if (!player.hasCoat()) {
 				outputText("  Your face");
-				if (skin.hasMagicalTattoo()) outputText(" covered with magical tattoo");
-				else if(skin.hasBattleTattoo()) outputText(" covered with battle tattoo");
+				if (skin.hasMagicalTattoo()) outputText(" covered with [skin color2] magical tattoo");
+				else if(skin.hasBattleTattoo()) outputText(" covered with [skin color2] battle tattoo");
 				else if(skin.hasLightningShapedTattoo()) outputText(" covered with a few glowing lightning tattoos");
-				else if(skin.hasScarShapedTattoo()) outputText(" covered with a few scar tattoos");
+				else if(skin.hasScarShapedTattoo()) outputText(" covered with a few [skin color2] scar tattoos");
 				outputText(" looks human save for your sharp canines.");
 			} else if (player.hasFullCoatOfType(Skin.FUR)) {
 				outputText("  Your face looks human save for your sharp canines.  Your [skin coat.nocolor] is [skin coat.color], hiding your [skin base] underneath.");
@@ -2000,10 +2033,10 @@ public class PlayerAppearance extends BaseContent {
 				outputText("  You have a wolf-like face, complete with a wet nose.  ");
 				if (player.hasKeyItem("Fenrir Collar") >= 0) outputText("Cold blue mist seems to periodically escape from your mouth.   ");
 				outputText("The odd visage is hairless and covered with [skin coat]");
-				if (skin.hasMagicalTattoo()) outputText(" covered with magical tattoo");
-				else if(skin.hasBattleTattoo()) outputText(" covered with battle tattoo");
+				if (skin.hasMagicalTattoo()) outputText(" covered with [skin color2] magical tattoo");
+				else if(skin.hasBattleTattoo()) outputText(" covered with [skin color2] battle tattoo");
 				else if(skin.hasLightningShapedTattoo()) outputText(" covered with a few glowing lightning tattoos");
-				else if(skin.hasScarShapedTattoo()) outputText(" covered with a few scar tattoos");
+				else if(skin.hasScarShapedTattoo()) outputText(" covered with a few [skin color2] scar tattoos");
 				outputText(".");
 			} else if (player.hasFullCoatOfType(Skin.FUR)) {
 				outputText("  You have a wolf’s face, complete with wet nose a panting tongue and threatening teeth.  ");
@@ -2017,10 +2050,10 @@ public class PlayerAppearance extends BaseContent {
 		if (faceType == Face.WOLF_FANGS) {
 			if (!player.hasCoat()) {
 				outputText("  Your face is human in shape and structure with [skin coat]");
-				if (skin.hasMagicalTattoo()) outputText(" covered with magical tattoo");
-				else if(skin.hasBattleTattoo()) outputText(" covered with battle tattoo");
+				if (skin.hasMagicalTattoo()) outputText(" covered with [skin color2] magical tattoo");
+				else if(skin.hasBattleTattoo()) outputText(" covered with [skin color2] battle tattoo");
 				else if(skin.hasLightningShapedTattoo()) outputText(" covered with a few glowing lightning tattoos");
-				else if(skin.hasScarShapedTattoo()) outputText(" covered with a few scar tattoos");
+				else if(skin.hasScarShapedTattoo()) outputText(" covered with a few [skin color2] scar tattoos");
 				outputText(". Your mouth is somewhat human save for your wolf-like canines.");
 			} else if (player.hasPartialCoat(Skin.FUR)) {
 				outputText("  Your face looks human save for your wolf-like canines.  You've got [skin coat], hiding your [skin noadj] underneath your furry visage.");
@@ -2309,6 +2342,12 @@ public function RacialScores():void {
 	}
 	else if (player.cowScore() >= 1 && player.cowScore() < 4) outputText("\n<font color=\"#008000\">Half Cow-morph: " + player.cowScore() + "</font>");
 	else if (player.cowScore() < 1) outputText("\n<font color=\"#ff0000\">Half Cow-morph: 0</font>");
+	//Dark Goo
+	if (player.darkgooScore() >= 17) outputText("\n<font color=\"#0000a0\">Dark Slime Queen: " + player.darkgooScore() + " (+" + (115 * (1 + player.newGamePlusMod())) + " max Tou, -" + (50 * (1 + player.newGamePlusMod())) + " max Spe, +" + (45 * (1 + player.newGamePlusMod())) + " max Int, +" + (145 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
+	else if (player.darkgooScore() >= 13 && player.darkgooScore() < 17) outputText("\n<font color=\"#0000a0\">Dark Slime: " + player.darkgooScore() + " (+" + (90 * (1 + player.newGamePlusMod())) + " max Tou, -" + (40 * (1 + player.newGamePlusMod())) + " max Spe, +" + (45 * (1 + player.newGamePlusMod())) + " max Int, +" + (100 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
+	else if (player.darkgooScore() >= 6 && player.darkgooScore() < 13) outputText("\n<font color=\"#0000a0\">Half Dark Slime: " + player.darkgooScore() + " (+" + (45 * (1 + player.newGamePlusMod())) + " max Tou, -" + (20 * (1 + player.newGamePlusMod())) + " max Spe, +" + (15 * (1 + player.newGamePlusMod())) + " max Int, +" + (50 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
+	else if (player.darkgooScore() >= 1 && player.darkgooScore() < 6) outputText("\n<font color=\"#008000\">Half Dark Slime: " + player.darkgooScore() + "</font>");
+	else if (player.darkgooScore() < 1) outputText("\n<font color=\"#ff0000\">Half Dark Slime: 0</font>");
 	//Deer
 	if (player.deerScore() >= 4) outputText("\n<font color=\"#0000a0\">Deer-morph: " + player.deerScore() + " (+" + (20 * (1 + player.newGamePlusMod())) + " max Spe)</font>");
 	else if (player.deerScore() >= 1 && player.deerScore() < 4) outputText("\n<font color=\"#008000\">Deer-morph: " + player.deerScore() + "</font>");
@@ -2341,8 +2380,8 @@ public function RacialScores():void {
 	else if (player.devilkinScore() >= 1 && player.devilkinScore() < 7) outputText("\n<font color=\"#008000\">Half fiend: " + player.devilkinScore() + "</font>");
 	else if (player.devilkinScore() < 1) outputText("\n<font color=\"#ff0000\">Half fiend: 0</font>");
 	//Displacer beast
-	if (player.displacerbeastScore() >= 13) {
-		outputText("\n<font color=\"#0000a0\">Displacer Beast: " + player.displacerbeastScore() + " (+" + (80 * (1 + player.newGamePlusMod())) + " max Str, ");
+	if (player.displacerbeastScore() >= 14) {
+		outputText("\n<font color=\"#0000a0\">Displacer Beast: " + player.displacerbeastScore() + " (+" + (95 * (1 + player.newGamePlusMod())) + " max Str, ");
 		if (player.findPerk(PerkLib.Flexibility) > 0) {
 			if (player.findPerk(PerkLib.CatlikeNimblenessEvolved) > 0) outputText("+" + (120 * (1 + player.newGamePlusMod())) + " ");
 			else outputText("+" + (110 * (1 + player.newGamePlusMod())) + " ");
@@ -2350,7 +2389,7 @@ public function RacialScores():void {
 		else outputText("+" + (100 * (1 + player.newGamePlusMod())) + " ");
 		outputText("max Spe, -" + (25 * (1 + player.newGamePlusMod())) + " max Int, -" + (20 * (1 + player.newGamePlusMod())) + " max Wis, +" + (60 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
 	}
-	else if (player.displacerbeastScore() >= 1 && player.displacerbeastScore() < 13) outputText("\n<font color=\"#008000\">Displacer Beast: " + player.displacerbeastScore() + "</font>");
+	else if (player.displacerbeastScore() >= 1 && player.displacerbeastScore() < 14) outputText("\n<font color=\"#008000\">Displacer Beast: " + player.displacerbeastScore() + "</font>");
 	else if (player.displacerbeastScore() < 1) outputText("\n<font color=\"#ff0000\">Displacer Beast: 0</font>");
 	//Dog
 	if (player.dogScore() >= 4) outputText("\n<font color=\"#0000a0\">Dog-morph: " + player.dogScore() + " (+" + (15 * (1 + player.newGamePlusMod())) + " max Spe, -" + (5 * (1 + player.newGamePlusMod())) + " max Int)</font>");
@@ -2432,10 +2471,11 @@ public function RacialScores():void {
 	else if (player.goblinScore() >= 1 && player.goblinScore() < 10) outputText("\n<font color=\"#008000\">Goblin: " + player.goblinScore() + "</font>");
 	else if (player.goblinScore() < 1) outputText("\n<font color=\"#ff0000\">Goblin: 0</font>");
 	//Goo
-	if (player.gooScore() >= 8) outputText("\n<font color=\"#0000a0\">Goo: " + player.gooScore() + " (+" + (80 * (1 + player.newGamePlusMod())) + " max Tou, -" + (40 * (1 + player.newGamePlusMod())) + " max Spe, +" + (40 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
-	else if (player.gooScore() >= 4 && player.gooScore() < 8) outputText("\n<font color=\"#0000a0\">Half Goo: " + player.gooScore() + " (+" + (40 * (1 + player.newGamePlusMod())) + " max Tou, -" + (20 * (1 + player.newGamePlusMod())) + " max Spe, +" + (40 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
-	else if (player.gooScore() >= 1 && player.gooScore() < 4) outputText("\n<font color=\"#008000\">Half Goo: " + player.gooScore() + "</font>");
-	else if (player.gooScore() < 1) outputText("\n<font color=\"#ff0000\">Half Goo: 0</font>");
+	if (player.gooScore() >= 15) outputText("\n<font color=\"#0000a0\">Slime Queen: " + player.gooScore() + " (+" + (115 * (1 + player.newGamePlusMod())) + " max Tou, -" + (50 * (1 + player.newGamePlusMod())) + " max Spe, +" + (160 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
+	else if (player.gooScore() >= 11 && player.gooScore() < 15) outputText("\n<font color=\"#0000a0\">Slime: " + player.gooScore() + " (+" + (105 * (1 + player.newGamePlusMod())) + " max Tou, -" + (40 * (1 + player.newGamePlusMod())) + " max Spe, +" + (100 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
+	else if (player.gooScore() >= 5 && player.gooScore() < 11) outputText("\n<font color=\"#0000a0\">Half Slime: " + player.gooScore() + " (+" + (45 * (1 + player.newGamePlusMod())) + " max Tou, -" + (20 * (1 + player.newGamePlusMod())) + " max Spe, +" + (50 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
+	else if (player.gooScore() >= 1 && player.gooScore() < 5) outputText("\n<font color=\"#008000\">Half Slime: " + player.gooScore() + "</font>");
+	else if (player.gooScore() < 1) outputText("\n<font color=\"#ff0000\">Half Slime: 0</font>");
 	//Gorgon
 	if (player.gorgonScore() >= 11) {
 		outputText("\n<font color=\"#0000a0\">Gorgon: " + player.gorgonScore() + " (");
@@ -2537,6 +2577,12 @@ public function RacialScores():void {
 	else if (player.lizardScore() >= 4 && player.lizardScore() < 8) outputText("\n<font color=\"#0000a0\">Half Lizard-morph: " + player.lizardScore() + " (+" + (40 * (1 + player.newGamePlusMod())) + " max Tou, +" + (20 * (1 + player.newGamePlusMod())) + " max Int, +" + (30 * (1 + player.newGamePlusMod())) + " max Fatigue)</font>");
 	else if (player.lizardScore() >= 1 && player.lizardScore() < 4) outputText("\n<font color=\"#008000\">Half Lizard-morph: " + player.lizardScore() + "</font>");
 	else if (player.lizardScore() < 1) outputText("\n<font color=\"#ff0000\">Half Lizard-morph: 0</font>");
+	//Magma Goo
+	if (player.magmagooScore() >= 17) outputText("\n<font color=\"#0000a0\">Magma Slime Queen: " + player.magmagooScore() + " (+" + (45 * (1 + player.newGamePlusMod())) + " max Str, +" + (115 * (1 + player.newGamePlusMod())) + " max Tou, -" + (50 * (1 + player.newGamePlusMod())) + " max Spe, +" + (145 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
+	else if (player.magmagooScore() >= 13 && player.magmagooScore() < 17) outputText("\n<font color=\"#0000a0\">Magma Slime: " + player.magmagooScore() + " (+" + (35 * (1 + player.newGamePlusMod())) + " max Str, +" + (100 * (1 + player.newGamePlusMod())) + " max Tou, -" + (40 * (1 + player.newGamePlusMod())) + " max Spe, +" + (100 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
+	else if (player.magmagooScore() >= 6 && player.magmagooScore() < 13) outputText("\n<font color=\"#0000a0\">Half Magma Slime: " + player.magmagooScore() + " (+" + (15 * (1 + player.newGamePlusMod())) + " max Str, +" + (45 * (1 + player.newGamePlusMod())) + " max Tou, -" + (20 * (1 + player.newGamePlusMod())) + " max Spe, +" + (50 * (1 + player.newGamePlusMod())) + " max Lib)</font>");
+	else if (player.magmagooScore() >= 1 && player.magmagooScore() < 6) outputText("\n<font color=\"#008000\">Half Magma Slime: " + player.magmagooScore() + "</font>");
+	else if (player.magmagooScore() < 1) outputText("\n<font color=\"#ff0000\">Half Magma Slime: 0</font>");
 	//Manticore
 	if (player.manticoreScore() >= 12) {
 		outputText("\n<font color=\"#0000a0\">Manticore: " + player.manticoreScore() + " (+" + (100 * (1 + player.newGamePlusMod())) + " max Spe, +" + (50 * (1 + player.newGamePlusMod())) + " max Int, +" + (60 * (1 + player.newGamePlusMod())) + " max Lib, +" + (30 * (1 + player.newGamePlusMod())) + " min Sens, +" + (50 * (1 + player.newGamePlusMod())) + " max HP)</font>");
@@ -2883,4 +2929,4 @@ public function GenderForcedSettingFemale():void {
 		else outputText("<b>Yo, this is an error.</b>");
 	}
 }
-}
+}
