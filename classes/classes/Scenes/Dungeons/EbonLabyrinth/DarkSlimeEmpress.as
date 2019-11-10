@@ -29,41 +29,42 @@ use namespace CoC;
 			outputText(". ");
 			if (player.isLactating()) outputText("One of them even made suction cup tentacles in order to milk your breasts. ");
 			outputText("You’re being violated from all sides and in all possible ways by a full harem of jelly girls!\n\n");
-			player.dynStats("lus", 7 + rand(5) + this.sens / 8);
+			player.dynStats("lus", 17 + rand(7) + this.sens / 5, "scale", false);
 			if (!hasStatusEffect(StatusEffects.LingeringSlime)) createStatusEffect(StatusEffects.LingeringSlime, 0, 0, 0, 0);
 		}
 		
 		private function gooSlimeBarrage():void
 		{
 			outputText("The slimes suddenly create bows and arrows out of their body, shooting at you with a volley of slimy aphrodisiac bolts!\n");
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(200))) gooSlimeBarrageD();
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(100))) gooSlimeBarrageD();
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(100))) gooSlimeBarrageD();
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(100))) gooSlimeBarrageD();
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(100))) gooSlimeBarrageD();
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(100))) gooSlimeBarrageD();
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(100))) gooSlimeBarrageD();
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(100))) gooSlimeBarrageD();
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(100))) gooSlimeBarrageD();
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(100))) gooSlimeBarrageD();
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(100))) gooSlimeBarrageD();
-			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(100))) gooSlimeBarrageD();
+			gooSlimeBarrageD();
+			gooSlimeBarrageD();
+			gooSlimeBarrageD();
+			gooSlimeBarrageD();
+			if (player.spe < ((160 * (player.newGamePlusMod() + 1)) + rand(80))) gooSlimeBarrageD();
+			if (player.spe < ((160 * (player.newGamePlusMod() + 1)) + rand(80))) gooSlimeBarrageD();
+			if (player.spe < ((140 * (player.newGamePlusMod() + 1)) + rand(70))) gooSlimeBarrageD();
+			if (player.spe < ((140 * (player.newGamePlusMod() + 1)) + rand(70))) gooSlimeBarrageD();
+			if (player.spe < ((120 * (player.newGamePlusMod() + 1)) + rand(60))) gooSlimeBarrageD();
+			if (player.spe < ((120 * (player.newGamePlusMod() + 1)) + rand(60))) gooSlimeBarrageD();
+			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(50))) gooSlimeBarrageD();
+			if (player.spe < ((100 * (player.newGamePlusMod() + 1)) + rand(50))) gooSlimeBarrageD();
 			outputText("\n");
 		}
 		private function gooSlimeBarrageD():void {
-			var td:Number = 4 + rand(4);
-			td += player.lib / 10;
-			td += player.sens / 10;
+			var td:Number = 7 + rand(5);
+			td += player.lib / 8;
+			td += player.sens / 8;
 			td = Math.round(td);
+			td = td * (EngineCore.lustPercent() / 100);
 			if (!hasStatusEffect(StatusEffects.LingeringSlime)) createStatusEffect(StatusEffects.LingeringSlime, 0, 0, 0, 0);
-			outputText("\nLust swells up in your body as the substance splash on you. <b>(<font color=\"#800000\">" + td + "</font>)</b> lust damage.");
-			player.dynStats("lus", td);
+			outputText("\nLust swells up in your body as the substance splash on you. <b>(<font color=\"#ff00ff\">" + (Math.round(td * 10) / 10) + "</font>)</b> lust damage.");
+			player.dynStats("lus", td, "scale", false);
 		}
 		
 		private function gooGroupGrapple():void
 		{
 			outputText("The slime girls suddenly attempt to grapple you one after another to restrict your movements!");
-			if((player.findPerk(PerkLib.Evade) && rand(6) == 0) || (player.spe > rand(300))) outputText("You barely manage to break out of their clingy bodies!");
+			if((player.findPerk(PerkLib.Evade) && rand(6) == 0) || (player.spe > ((this.spe * 1.5) + rand(200)))) outputText("You barely manage to break out of their clingy bodies!");
 			else {
 				outputText("Before you know it you’re covered and pulled down by their combined bodies.");
 				if (!player.hasStatusEffect(StatusEffects.GooBind)) player.createStatusEffect(StatusEffects.GooBind, 0, 0, 0, 0);
@@ -74,7 +75,7 @@ use namespace CoC;
 		{
 			if (hasStatusEffect(StatusEffects.LingeringSlime)) {
 				outputText("Small stains of lingering slimes cling to your body, insidiously pouring you with aphrodisiacs.\n\n");
-				player.dynStats("lus", (8 + int(player.lib / 20 + player.cor / 25)));
+				player.dynStats("lus", (10 + int(player.lib / 12 + player.cor / 14)));
 				removeStatusEffect(StatusEffects.LingeringSlime);
 			}			
 			if (player.hasStatusEffect(StatusEffects.GooBind)) gooHaremStrike();
@@ -101,26 +102,29 @@ use namespace CoC;
 			if (player.statusEffectv1(StatusEffects.EbonLabyrinthBoss) == 65) {
 				initStrTouSpeInte(120, 240, 160, 150);
 				initWisLibSensCor(150, 240, 200, 10);
-				this.armorDef = 30;
-				this.armorMDef = 90;
+				this.armorDef = 60;
+				this.armorMDef = 180;
 				this.bonusHP = 10000;
 				this.level = 65;
+				this.gems = 200 + rand(80);
 			}
 			if (player.statusEffectv1(StatusEffects.EbonLabyrinthBoss) == 70) {
 				initStrTouSpeInte(140, 290, 200, 180);
-				initWisLibSensCor(180, 290, 200, 10);
-				this.armorDef = 40;
-				this.armorMDef = 120;
+				initWisLibSensCor(180, 290, 210, 10);
+				this.armorDef = 80;
+				this.armorMDef = 240;
 				this.bonusHP = 20000;
 				this.level = 70;
+				this.gems = 250 + rand(90);
 			}
 			if (player.statusEffectv1(StatusEffects.EbonLabyrinthBoss) == 75) {
 				initStrTouSpeInte(160, 340, 240, 210);
-				initWisLibSensCor(210, 340, 200, 10);
-				this.armorDef = 50;
-				this.armorMDef = 150;
+				initWisLibSensCor(210, 340, 220, 10);
+				this.armorDef = 100;
+				this.armorMDef = 300;
 				this.bonusHP = 30000;
 				this.level = 75;
+				this.gems = 300 + rand(100);
 			}
 			this.a = "";
 			this.short = "Dark Slime Empress";
@@ -148,10 +152,7 @@ use namespace CoC;
 			this.lust = 45;
 			this.lustVuln = .75;
 			this.temperment = TEMPERMENT_LOVE_GRAPPLES;
-			this.gems = rand(6) + 4;
-			this.drop = new ChainedDrop().add(weapons.PIPE,1/10)
-					.add(consumables.DSLIMEJ,1/2)
-					.elseDrop(useables.GREENGL);
+			this.drop = new WeightedDrop(consumables.DSLIMEJ, 1);
 			this.createPerk(PerkLib.DemonicDesireI, 0, 0, 0, 0);
 			this.createPerk(PerkLib.FireVulnerability, 0, 0, 0, 0);
 			this.createPerk(PerkLib.LightningVulnerability, 0, 0, 0, 0);

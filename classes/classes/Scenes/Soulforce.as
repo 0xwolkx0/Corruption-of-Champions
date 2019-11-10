@@ -30,8 +30,7 @@ import classes.Scenes.Areas.HighMountains.IzumiScene;
 import classes.Scenes.Dungeons.D3.Lethice;
 import classes.Scenes.Dungeons.DenOfDesire.HeroslayerOmnibus;
 import classes.Scenes.Dungeons.DenOfDesire.ObsidianGargoyle;
-import classes.Scenes.Dungeons.EbonLabyrinth.ChaosChimera;
-import classes.Scenes.Dungeons.EbonLabyrinth.DarkSlimeEmpress;
+import classes.Scenes.Dungeons.EbonLabyrinth.*;
 import classes.Scenes.Monsters.DarkElfRanger;
 import classes.Scenes.Monsters.DarkElfScout;
 import classes.Scenes.Monsters.DarkElfSlaver;
@@ -181,7 +180,6 @@ use namespace CoC;
 				outputText("Mortal\n");
 			outputText("<b>Cultivation level:</b> " + flags[kFLAGS.SOUL_CULTIVATION] + "\n");
 			outputText("<b>Additional Soulforce from training:</b> " + flags[kFLAGS.SOULFORCE_GAINED_FROM_CULTIVATING] + " / 1430\n");
-			if (player.hasStatusEffect(StatusEffects.AlvinaTraining2)) outputText("ALvi training 2 value: " + player.statusEffectv1(StatusEffects.AlvinaTraining2) + "\n");
 		/*	outputText("<b>Progress toward clearing next meridian: </b>");
 			if (flags[kFLAGS.UNLOCKED_MERIDIANS] == 2)
 				outputText(flags[kFLAGS.SOULFORCE_USED_FOR_BREAKTHROUGH] + " / wartość liczbowa\n");
@@ -196,7 +194,8 @@ use namespace CoC;
 			if (player.findPerk(PerkLib.SoulTyrant) >= 0) dailySoulforceUsesLimit++;
 			if (player.findPerk(PerkLib.SoulAncestor) >= 0) dailySoulforceUsesLimit++;//dodawać kolejne co 3 level-e
 			menu();
-			addButton(0, "Cultivate", SoulforceRegeneration).hint("Spend some time on restoring some of the used soulforce.");
+			if (player.hasPerk(PerkLib.EnergyDependent)) addButtonDisabled(0, "Cultivate", "You're unable to recover soulforce by cultivating.");
+			else addButton(0, "Cultivate", SoulforceRegeneration).hint("Spend some time on restoring some of the used soulforce.");
 			if (flags[kFLAGS.DAILY_SOULFORCE_USE_LIMIT] < dailySoulforceUsesLimit) addButton(1, "Self-sustain", SelfSustain).hint("Spend some soulforce on suppresing hunger for a while."); //zamiana soulforce na satiety w stosunku 1:5
 			if (flags[kFLAGS.DAILY_SOULFORCE_USE_LIMIT] < dailySoulforceUsesLimit) addButton(2, "Repres. Lust", RepresLust).hint("Spend some soulforce on calming your sexual urges."); //używanie soulforce do zmniejszania lust w stosunku 1:2
 			if (flags[kFLAGS.DAILY_SOULFORCE_USE_LIMIT] < dailySoulforceUsesLimit) addButton(4, "Adj. Corr.", CorruptionAndSoulforce).hint("Spend some soulforce on affecting your current corruption."); //używanie soulforce do zmniejszania corruption w stosunku 1:100 a zdobywanie corruption w stosunku 1:50
@@ -204,7 +203,7 @@ use namespace CoC;
 			//addButton(5, "Upgrade", UpgradeItems).hint("."); //ulepszanie itemów
 			if (player.findPerk(PerkLib.Metamorph) >= 0) addButton(6, "Metamorf", SceneLib.metamorph.accessMetamorphMenu).hint("Use your soulforce to mold freely your body.");//używanie metamorfowania z użyciem soulforce
 			if (player.findPerk(PerkLib.SoulSense) >= 0) addButton(7, "Soul Sense", SoulSense).hint("Use your soul sense to trigger specific encounter."); //używanie divine sense aby znaleść określone event encounters: Tamani (lvl 6+), Tamani daugthers (lvl 6+), Kitsune mansion (lvl 12+), Izumi (lvl 18/24+), itp.
-			addButton(10, "Cheats", SoulforceCheats).hint("Well as title saying those are cheats ^^");//block this option at each public version
+			//addButton(10, "Cheats", SoulforceCheats).hint("Well as title saying those are cheats ^^");//block this option at each public version
 			addButton(14, "Back", playerMenu);
 		}//w lini 28 w oOnLoadVariables zmian wprowadzić i w lini conditionalConverters w folderze parser zmian dot. wraith wprowadzić, zablokować perki soul king to soul ancestor w momencie robienia release version
 		public function SoulforceCheats():void {
@@ -224,11 +223,52 @@ use namespace CoC;
 			//if (flags[kFLAGS.SAMIRAH_FOLLOWER] < 8) addButton(8, "Repta-Tongue", AddReptaTongue).hint("Items bungle for Repta-Tongue Potion.");
 			if (player.hasPerk(PerkLib.Metamorph)) addButton(9, "MetamorphFull", AllMetamorphOptionsUnlock).hint("Metamorph all options unlock.");
 			//addButton(9, "ChimeraBodyUlt", ChimeraBodyUltimateStage).hint("Ultimate Stage of Chimera Body for tests and lulz. Now with on/off switch for more lulz.");
-			addButton(10, "Gargoyle", GargoyleMenu).hint("To Be or Not To Be Gargoyle that is a question.");
+			addButton(10, "De-Jian", AddTheSeerHairpinAndCo01);
+			//addButton(10, "Gargoyle", GargoyleMenu).hint("To Be or Not To Be Gargoyle that is a question.");
 			addButton(11, "PerkGalore1", GargoyleMenu2);
 			addButton(12, "PerkGalore2", GargoyleMenu3);
 			addButton(13, "BodyPartEditor", SceneLib.debugMenu.bodyPartEditorRoot);
 			addButton(14, "Back", accessSoulforceMenu);
+		}
+		public function AddTheSeerHairpinAndCo01():void {
+			outputText("\n\n");
+			inventory.takeItem(consumables.VITAL_T, AddTheSeerHairpinAndCo02);
+		}
+		public function AddTheSeerHairpinAndCo02():void {
+			outputText("\n");
+			inventory.takeItem(consumables.VITAL_T, AddTheSeerHairpinAndCo03);
+		}
+		public function AddTheSeerHairpinAndCo03():void {
+			outputText("\n");
+			inventory.takeItem(consumables.VITAL_T, AddTheSeerHairpinAndCo04);
+		}
+		public function AddTheSeerHairpinAndCo04():void {
+			outputText("\n");
+			inventory.takeItem(consumables.VITAL_T, AddTheSeerHairpinAndCo05);
+		}
+		public function AddTheSeerHairpinAndCo05():void {
+			outputText("\n");
+			inventory.takeItem(consumables.VITAL_T, AddTheSeerHairpinAndCo06);
+		}
+		public function AddTheSeerHairpinAndCo06():void {
+			outputText("\n");
+			inventory.takeItem(consumables.PPHILTR, AddTheSeerHairpinAndCo07);
+		}
+		public function AddTheSeerHairpinAndCo07():void {
+			outputText("\n");
+			inventory.takeItem(consumables.PPHILTR, AddTheSeerHairpinAndCo08);
+		}
+		public function AddTheSeerHairpinAndCo08():void {
+			outputText("\n");
+			inventory.takeItem(consumables.PPHILTR, AddTheSeerHairpinAndCo09);
+		}
+		public function AddTheSeerHairpinAndCo09():void {
+			outputText("\n");
+			inventory.takeItem(consumables.PPHILTR, AddTheSeerHairpinAndCo10);
+		}
+		public function AddTheSeerHairpinAndCo10():void {
+			outputText("\n");
+			inventory.takeItem(consumables.PPHILTR, SoulforceCheats);
 		}
 public function FightAria():void {
 	clearOutput();
@@ -264,6 +304,26 @@ public function FightDarkSlimeEmpress():void {
 		else player.createStatusEffect(StatusEffects.EbonLabyrinthBoss,75,0,0,0);
 	}
 	startCombat(new DarkSlimeEmpress());
+}
+public function FightHydra():void {
+	clearOutput();
+	outputText("Entering battle with Hydra! Enjoy ^^");
+	if (rand(2) == 0) player.createStatusEffect(StatusEffects.EbonLabyrinthBoss,65,0,0,0);
+	else {
+		if (rand(2) == 0) player.createStatusEffect(StatusEffects.EbonLabyrinthBoss,70,0,0,0);
+		else player.createStatusEffect(StatusEffects.EbonLabyrinthBoss,75,0,0,0);
+	}
+	startCombat(new Hydra());
+}
+public function FightHellfireSnail():void {
+	clearOutput();
+	outputText("Entering battle with Hellfire Snail! Enjoy ^^");
+	if (rand(2) == 0) player.createStatusEffect(StatusEffects.EbonLabyrinthBoss,65,0,0,0);
+	else {
+		if (rand(2) == 0) player.createStatusEffect(StatusEffects.EbonLabyrinthBoss,70,0,0,0);
+		else player.createStatusEffect(StatusEffects.EbonLabyrinthBoss,75,0,0,0);
+	}
+	startCombat(new HellfireSnail());
 }
 		public function AddReptaTongue():void {
 			outputText("\n\n<b>(Gained set of items to make Repta-Tongue Potion!)</b>\n\n");
@@ -1479,7 +1539,8 @@ public function FightDarkSlimeEmpress():void {
 			//addButton(4, "AbyssalInk", "Not yet ready for test and just for future use put here already ^^ (Add 1 Abyssal Ink.)");
 			addButton(5, "Enigmanium", AddEnigmanium).hint("Add 1 vial of Enigmanium.");
 			addButton(6, "VT RV WF", AddVoltageTopaz).hint("Add 1 Voltage Topaz, 1 vial of Red Blood (Bat TF) and 1 Wonder Fruit.");
-			addButton(7, "Skelp", AddSkelp).hint("Add 1 Skelp (WIP Melkie TF).");
+			addButton(7, "DSJ HS FSS", AddDarkSlimeJelly).hint("Add 1 Dark Slime Jelly, 1 Hydra Scale and 1 Fire Snail Saliva.");
+			//addButton(7, "Skelp", AddSkelp).hint("Add 1 Skelp (WIP Melkie TF).");
 			//addButton(7, "V.D.ARC", AddVeryDilutedArcaneRegenConcotion).hint("Add 1 very diluted Arcane Regen Concotion.");
 			//addButton(8, "D.ARC", AddDilutedArcaneRegenConcotion).hint("Add 1 diluted Arcane Regen Concotion.");
 			//addButton(9, "A.R.CON", AddArcaneRegenConcotion).hint("Add 1 Arcane Regen Concotion.");
@@ -1516,17 +1577,19 @@ public function FightDarkSlimeEmpress():void {
 			//addButton(2, "Sonya", FightSonya).hint("Test fight with Sonya.");
 			//addButton(3, "RyuBi", FightRyuBi).hint("Test fight with RyuBi.");
 			//addButton(4, "Aria", FightAria).hint("Test fight with melkie huntress Aria.");
-			addButton(2, "ChaosChimera", FightChaosChimera).hint("Test fight with Chaos Chimera.");
-			addButton(3, "Alvina", FightAlvina).hint("Test fight with Alvina.");
-			addButton(4, "Neisa", FightNeisa).hint("Test fight with Neisa.");
-			addButton(5, "Lethice", FightLethice).hint("Test fight with Lethice.");
+			addButton(2, "Alvina", FightAlvina).hint("Test fight with Alvina.");
+			addButton(3, "Neisa", FightNeisa).hint("Test fight with Neisa.");
+			addButton(4, "Lethice", FightLethice).hint("Test fight with Lethice.");
+			addButton(5, "DarkSlimeEmpress", FightDarkSlimeEmpress).hint("Test fight with Dark Slime Empress.");
+			addButton(6, "Hydra", FightHydra).hint("Test fight with Hydra.");
+			addButton(7, "HellfireSnail", FightHellfireSnail).hint("Test fight with Hellfire Snail.");
 			//addButton(5, "DE Ranger", FightDarkElfRanger).hint("Test fight with Dark Elf Ranger. (lvl 39)");
 			//addButton(6, "DE Sniper", FightDarkElfSniper).hint("Test fight with Dark Elf Sniper. (lvl 51)");
-			addButton(6, "SomeMalicore", FightRandomnManticore).hint("Test fight with some malicore.");
-			addButton(7, "Electra", FightElectra).hint("Test fight with Electra.");
+			//addButton(6, "SomeMalicore", FightRandomnManticore).hint("Test fight with some malicore.");
+			//addButton(7, "Electra", FightElectra).hint("Test fight with Electra.");
 			addButton(8, "LvLUP Eva", LvLUPEva).hint("LvL UP forcefully Evangeline for testing purpose up to the limit.");
 			addButton(9, "DELvL Eva", DELvLEva).hint("DE LvL forcefully Evangeline for testing purpose down toward the lvl 12.");
-			addButton(10, "DarkSlimeEmpress", FightDarkSlimeEmpress).hint("Test fight with Dark Slime Empress.");
+			addButton(10, "ChaosChimera", FightChaosChimera).hint("Test fight with Chaos Chimera.");
 			addButton(11, "LvLUP Aurora", LvLUPAurora).hint("LvL UP forcefully Aurora for testing purpose up to the limit.");
 			addButton(12, "DELvL Aurora", DELvLAurora).hint("DE LvL forcefully Aurora for testing purpose down toward the lvl 1.");
 			addButton(13, "FeralT.Beast", FightFeralImp).hint("Test fight with feral tentacle beast.");
@@ -1590,6 +1653,18 @@ public function FightDarkSlimeEmpress():void {
 		public function AddWonderFruit():void {
 			outputText("\n\n<b>(Gained 1 Wonder Fruit!)</b>\n\n");
 			inventory.takeItem(consumables.WOFRUIT, NonEquipmentMenu);
+		}
+		public function AddDarkSlimeJelly():void {
+			outputText("\n\n<b>(Gained 1 Dark Slime Jelly!)</b>\n\n");
+			inventory.takeItem(consumables.DSLIMEJ, AddHydraScale);
+		}
+		public function AddHydraScale():void {
+			outputText("\n\n<b>(Gained 1 Hydra Scale!)</b>\n\n");
+			inventory.takeItem(consumables.HYDRASC, AddFireSnailSaliva);
+		}
+		public function AddFireSnailSaliva():void {
+			outputText("\n\n<b>(Gained 1 Fire Snail Saliva!)</b>\n\n");
+			inventory.takeItem(consumables.FSNAILS, NonEquipmentMenu);
 		}
 		public function AddGorgonOil():void {
 			outputText("\n\n<b>(Gained 1 vial of Gorgon Oil!)</b>\n\n");

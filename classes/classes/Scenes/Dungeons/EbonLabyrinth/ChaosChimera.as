@@ -32,8 +32,8 @@ use namespace CoC;
 		}
 		private function PentaAttackDamage():void
 		{
-			var damage:Number = this.str;
-			damage += this.spe;
+			var damage:Number = this.str * 2;
+			damage += this.spe * 2;
 			var damage2:Number = 0.9;
 			damage2 += (rand(21) * 0.01);
 			damage *= damage2;
@@ -46,11 +46,11 @@ use namespace CoC;
 			if (player.getEvasionRoll()) outputText("You barely get out of the way in time!");
 			else {
 				outputText("You are badly poisoned!");
-				var damage:Number = this.inte;
-				damage += this.wis;
+				var damage:Number = this.inte * 2;
+				damage += this.wis * 2;
 				damage = Math.round(damage);
 				damage = player.takePoisonDamage(damage, true);
-				player.dynStats("lus", 4 + rand(4) + player.sens / 9);
+				player.dynStats("lus", 7 + rand(5) + player.sens / 5);
 			}
 		}
 		private function Dragonbreath():void
@@ -59,7 +59,7 @@ use namespace CoC;
 			if (player.getEvasionRoll()) outputText("You barely get out of the way in time!");
 			else {
 				var damage:Number = 0;
-				damage += 400 + (this.inte * 3) + rand(100);
+				damage += 1000 + (this.inte * 4) + rand(100);
 				if (player.hasStatusEffect(StatusEffects.Blizzard)) {
 					player.addStatusValue(StatusEffects.Blizzard, 1, -1);
 					damage *= 0.2;
@@ -125,8 +125,8 @@ use namespace CoC;
 		private function FlybyAttack():void
 		{
 			outputText("The chimera makes a flyby attack trying to rake you with its hind paws as it dives by your position. ");
-			var damage:Number = this.str;
-			damage += this.spe * 2;
+			var damage:Number = this.str * 2;
+			damage += this.spe * 3;
 			damage = Math.round(damage);
 			damage = player.takePhysDamage(damage, true);
 		}
@@ -185,8 +185,8 @@ use namespace CoC;
 			this.weaponAttack = 38;
 			this.weaponVerb = "lunge";
 			this.armorName = "chitin";
-			this.armorDef = 60;
-			this.armorMDef = 10;
+			this.armorDef = 120;
+			this.armorMDef = 20;
 			this.bonusHP = 100000;
 			this.bonusLust = 40;
 			this.gems = 200 + rand(80);

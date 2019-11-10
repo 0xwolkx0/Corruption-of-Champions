@@ -2953,7 +2953,7 @@ import flash.utils.getQualifiedClassName;
 				//Deal damage if still wounded.
 				else {
 					var store2:Number = int(50+(player.inte/10));
-					store2 = SceneLib.combat.doDamage(store2);
+					store2 = SceneLib.combat.doFireDamage(store2);
 					if(plural) outputText(capitalA + short + " burn from lingering immolination after-effect. <b>(<font color=\"#800000\">" + store2 + "</font>)</b>\n\n");
 					else outputText(capitalA + short + " burns from lingering immolination after-effect. <b>(<font color=\"#800000\">" + store2 + "</font>)</b>\n\n");
 				}
@@ -2971,7 +2971,7 @@ import flash.utils.getQualifiedClassName;
 				else {
 					var store4:Number = (player.str + player.spe + player.tou) * 2.5;
 					store4 += maxHP() * statusEffectv2(StatusEffects.BurnDoT);
-					store4 = SceneLib.combat.doDamage(store4);
+					store4 = SceneLib.combat.doFireDamage(store4);
 					if(plural) outputText(capitalA + short + " burn from lingering Burn after-effect. <b>(<font color=\"#800000\">" + store4 + "</font>)</b>\n\n");
 					else outputText(capitalA + short + " burns from lingering Burn after-effect. <b>(<font color=\"#800000\">" + store4 + "</font>)</b>\n\n");
 				}
@@ -2989,7 +2989,7 @@ import flash.utils.getQualifiedClassName;
 				else {
 					var store8:Number = (player.str + player.spe + player.tou) * 2.5;
 					store8 += maxHP() * statusEffectv2(StatusEffects.BurnDoT2);
-					store8 = SceneLib.combat.doDamage(store8);
+					store8 = SceneLib.combat.doFireDamage(store8);
 					if(plural) outputText(capitalA + short + " burn from lingering Burn after-effect. <b>(<font color=\"#800000\">" + store8 + "</font>)</b>\n\n");
 					else outputText(capitalA + short + " burns from lingering Burn after-effect. <b>(<font color=\"#800000\">" + store8 + "</font>)</b>\n\n");
 				}
@@ -3006,7 +3006,7 @@ import flash.utils.getQualifiedClassName;
 				//Deal damage if still wounded.
 				else {
 					var store6:Number = (player.spe + player.inte) * SceneLib.combat.soulskillMod() * 0.5;
-					store6 = SceneLib.combat.doDamage(store6);
+					store6 = SceneLib.combat.doFireDamage(store6);
 					if(plural) outputText(capitalA + short + " burn from lingering Fire Punch after-effect. <b>(<font color=\"#800000\">" + store6 + "</font>)</b>\n\n");
 					else outputText(capitalA + short + " burns from lingering Fire Punch after-effect. <b>(<font color=\"#800000\">" + store6 + "</font>)</b>\n\n");
 				}
@@ -3025,19 +3025,21 @@ import flash.utils.getQualifiedClassName;
 			if (hasStatusEffect(StatusEffects.AcidDoT)) {
 				//Countdown to heal
 				addStatusValue(StatusEffects.AcidDoT,1,-1);
-				if(statusEffectv3(StatusEffects.AcidDoT) > 1) addStatusValue(StatusEffects.AcidDoT,3,-1);
-				//Heal wounds
-				if(statusEffectv1(StatusEffects.AcidDoT) <= 0) {
-					outputText("Wound left by Acid " + a + short + " finally close ups.\n\n");
-					removeStatusEffect(StatusEffects.AcidDoT);
-				}
-				//Deal damage if still wounded.
-				else {
-					var store7:Number = (player.str + player.spe + player.tou) * 2.5;
-					store7 += maxHP() * statusEffectv2(StatusEffects.AcidDoT);
-					store7 = SceneLib.combat.doDamage(store7);
-					if(plural) outputText(capitalA + short + " are hurt by lingering Acid after-effect. <b>(<font color=\"#800000\">" + store7 + "</font>)</b>\n\n");
-					else outputText(capitalA + short + " is hurt by lingering Acid after-effect. <b>(<font color=\"#800000\">" + store7 + "</font>)</b>\n\n");
+				if (statusEffectv4(StatusEffects.AcidDoT) == 0) {
+					if (statusEffectv3(StatusEffects.AcidDoT) > 1) addStatusValue(StatusEffects.AcidDoT, 3, -1);
+					//Heal wounds
+					if (statusEffectv1(StatusEffects.AcidDoT) <= 0) {
+						outputText("Wound left by Acid " + a + short + " finally close ups.\n\n");
+						removeStatusEffect(StatusEffects.AcidDoT);
+					}
+					//Deal damage if still wounded.
+					else {
+						var store7:Number = (player.str + player.spe + player.tou) * 2.5;
+						store7 += maxHP() * statusEffectv2(StatusEffects.AcidDoT);
+						store7 = SceneLib.combat.doMagicDamage(store7);
+						if(plural) outputText(capitalA + short + " are hurt by lingering Acid after-effect. <b>(<font color=\"#800000\">" + store7 + "</font>)</b>\n\n");
+						else outputText(capitalA + short + " is hurt by lingering Acid after-effect. <b>(<font color=\"#800000\">" + store7 + "</font>)</b>\n\n");
+					}
 				}
 			}
 			if (hasStatusEffect(StatusEffects.Maleficium)) {
@@ -3054,18 +3056,17 @@ import flash.utils.getQualifiedClassName;
 				var healingPercent:Number = 0;
 				var temp2:Number = 0;
 				if (findPerk(PerkLib.Regeneration) >= 0) healingPercent += (0.5 * (1 + newGamePlusMod()));
-				if (findPerk(PerkLib.LizanRegeneration) >= 0) healingPercent += 1.5;
-				if (findPerk(PerkLib.LizanMarrow) >= 0) healingPercent += 0.5;
-				if (findPerk(PerkLib.LizanMarrowEvolved) >= 0) healingPercent += 1;
+				if (findPerk(PerkLib.LizanRegeneration) >= 0 && !hasStatusEffect(StatusEffects.RegenInhibitor)) healingPercent += 1.5;
+				if (findPerk(PerkLib.LizanMarrow) >= 0 && !hasStatusEffect(StatusEffects.RegenInhibitor)) healingPercent += 0.5;
+				if (findPerk(PerkLib.LizanMarrowEvolved) >= 0 && !hasStatusEffect(StatusEffects.RegenInhibitor)) healingPercent += 1;
 				if (findPerk(PerkLib.BodyCultivator) >= 0) healingPercent += 0.5;
 				if (findPerk(PerkLib.HclassHeavenTribulationSurvivor) >= 0) healingPercent += 0.5;
 				if (findPerk(PerkLib.GclassHeavenTribulationSurvivor) >= 0) healingPercent += 0.5;
 				if (findPerk(PerkLib.FclassHeavenTribulationSurvivor) >= 0) healingPercent += 0.5;
 				if (findPerk(PerkLib.Ferocity) >= 0 && this.HP < 1) healingPercent -= 1;
 				if (findPerk(PerkLib.EnemyPlantType) >= 0) healingPercent += 1;
-				if (findPerk(PerkLib.MonsterRegeneration) >= 0) healingPercent += perkv1(PerkLib.MonsterRegeneration);
+				if (findPerk(PerkLib.MonsterRegeneration) >= 0 && !hasStatusEffect(StatusEffects.RegenInhibitor)) healingPercent += perkv1(PerkLib.MonsterRegeneration);
 				if (hasStatusEffect(StatusEffects.MonsterRegen)) healingPercent += statusEffectv2(StatusEffects.MonsterRegen);
-				if (hasStatusEffect(StatusEffects.RegenInhibitor)) healingPercent = 0;
 				if (findPerk(PerkLib.Diehard) >= 0 && !findPerk(PerkLib.EpicDiehard) >= 0 && this.HP < 1) healingPercent -= 1;
 				temp2 = Math.round(maxHP() * healingPercent / 100);
 				if (findPerk(PerkLib.Lifeline) >= 0) temp2 += (45 * (1 + newGamePlusMod()));

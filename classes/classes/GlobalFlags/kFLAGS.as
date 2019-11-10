@@ -1998,12 +1998,12 @@ public static const UNKNOWN_FLAG_NUMBER_01989:int                               
 public static const UNKNOWN_FLAG_NUMBER_01990:int                                   = 1990;
 public static const UNKNOWN_FLAG_NUMBER_01991:int                                   = 1991;
 public static const UNKNOWN_FLAG_NUMBER_01992:int                                   = 1992;
-public static const UNKNOWN_FLAG_NUMBER_01993:int                                   = 1993;
-public static const UNKNOWN_FLAG_NUMBER_01994:int                                   = 1994;
-public static const UNKNOWN_FLAG_NUMBER_01995:int                                   = 1995;
-public static const UNKNOWN_FLAG_NUMBER_01996:int                                   = 1996;
-public static const UNKNOWN_FLAG_NUMBER_01997:int                                   = 1997;
-public static const UNKNOWN_FLAG_NUMBER_01998:int                                   = 1998;
+public static const PLAYER_DISARMED_UNDERWEAR_UPPER_ID:int                          = 1993;
+public static const PLAYER_DISARMED_UNDERWEAR_BOTTOM_ID:int                         = 1994;
+public static const PLAYER_DISARMED_ARMOR_ID:int                                    = 1995;
+public static const PLAYER_DISARMED_SHIELD_ID:int                                   = 1996;
+public static const PLAYER_DISARMED_WEAPON_R_ID:int                                 = 1997;
+public static const ERUPTING_RIPOSTE_DAMAGE_BANK:int                                = 1998;
 public static const HERO_BANE_DAMAGE_BANK:int                                   	= 1999;
 public static const CAMP_CABIN_METAL_PIECES_RESOURCES:int                           = 2000;
 public static const TIMES_ORGASMED:int                                              = 2001; //The reason flags are moved down there is to provide room when CoC ever gets updated and flags gets added. This is to avoid screwing up saves.
@@ -2579,7 +2579,7 @@ public static const PATCHOULI_HAIR_COLOR:int                                   	
 public static const PATCHOULI_COCK_TYPE:int                                   		= 2571;
 public static const GOO_GIRLS_AND_GREEN_SLIMES:int                                  = 2572;
 public static const MINO_CHEF_TALKED_RED_RIVER_ROOT:int                             = 2573;
-public static const NEISA_FOLLOWER:int                                   			= 2574;	//Not Yet Used Flag
+public static const NEISA_FOLLOWER:int                                   			= 2574;
 public static const NEISA_AFFECTION:int                                   			= 2575;	//Not Yet Used Flag
 public static const NEISA_LVL_UP:int                                   				= 2576;	//Not Yet Used Flag
 public static const NEISA_DEFEATS_COUNTER:int                                   	= 2577;	//Not Yet Used Flag
@@ -2618,7 +2618,7 @@ public static const UNKNOWN_FLAG_NUMBER_02609:int                               
 public static const UNKNOWN_FLAG_NUMBER_02610:int                                   = 2610;//lvl 72		//Not Yet Used Flag
 public static const UNKNOWN_FLAG_NUMBER_02611:int                                   = 2611;//lvl 102	//Not Yet Used Flag
 public static const UNKNOWN_FLAG_NUMBER_02612:int                                   = 2612;//lvl 102	//Not Yet Used Flag
-public static const TED_02613:int                                   = 2613;
+public static const TED_02613:int                                   = 2613;								//Not Yet Used Flag
 public static const TED_WRATH:int                                   				= 2614;
 public static const TED_DEFEATS_COUNTER:int                                   		= 2615;
 public static const TED_LVL_UP:int                                   				= 2616;
@@ -2700,9 +2700,9 @@ public static const UNKNOWN_FLAG_NUMBER_02691:int                               
 public static const UNKNOWN_FLAG_NUMBER_02692:int                                   = 2692;
 public static const UNKNOWN_FLAG_NUMBER_02693:int                                   = 2693;
 public static const UNKNOWN_FLAG_NUMBER_02694:int                                   = 2694;
-public static const UNKNOWN_FLAG_NUMBER_02695:int                                   = 2695;
-public static const UNKNOWN_FLAG_NUMBER_02696:int                                   = 2696;
-public static const UNKNOWN_FLAG_NUMBER_02697:int                                   = 2697;
+public static const ALVINA_DIARY:int                                   				= 2695;
+public static const HELLFIRE_SNAIL_ENC:int                                   		= 2696;
+public static const CURSE_OF_THE_JIANGSHI:int                                   	= 2697;
 public static const UNKNOWN_FLAG_NUMBER_02698:int                                   = 2698;
 public static const UNKNOWN_FLAG_NUMBER_02699:int                                   = 2699;
 public static const UNKNOWN_FLAG_NUMBER_02700:int                                   = 2700;
@@ -3007,3 +3007,4 @@ public static const HYPER_HAPPY:int                                             
 public static const UNKNOWN_FLAG_NUMBER_02999:int                                   = 2999; // ------------------------- Jojo Debug Flag?
 	}    
 }
+

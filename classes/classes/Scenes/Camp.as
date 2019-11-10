@@ -1,6 +1,9 @@
 ﻿package classes.Scenes{
 import classes.*;
+import classes.BodyParts.Arms;
+import classes.BodyParts.Eyes;
 import classes.BodyParts.Face;
+import classes.BodyParts.Horns;
 import classes.BodyParts.LowerBody;
 import classes.BodyParts.Skin;
 import classes.BodyParts.Tail;
@@ -27,6 +30,7 @@ use namespace CoC;
 			CoC.instance.timeQ = value;
 		}
 		private var campQ:Boolean = false;
+		private var waitingORresting:int = 1;
 
 		protected function hasItemInStorage(itype:ItemType):Boolean
 		{
@@ -889,6 +893,8 @@ CoC.instance.saves.saveGame(player.slotName);
 	}
 	addButton(12, "Wait", doWait).hint("Wait for four hours.\n\nShift-click to wait until the night comes.");
 	if (player.fatigue > 40 || player.HP / player.maxHP() <= .9) addButton(12, "Rest", rest).hint("Rest for four hours.\n\nShift-click to rest until fully healed or night comes.");
+//	addButton(12, "Wait", doWaitMenu).hint("Wait for one to eigth hours. Or until the night comes.");
+//	if (player.fatigue > 40 || player.HP / player.maxHP() <= .9) addButton(12, "Rest", restMenu).hint("Rest for one to eight hours. Or until fully healed / night comes.");
 	if (model.time.hours >= 21 || model.time.hours < 6) addButton(12, "Sleep", doSleep).hint("Turn yourself in for the night.");
 //	if (flags[kFLAGS.EVANGELINE_FOLLOWER] >= 1 && player.findPerk(PerkLib.EzekielBlessing) < 0) addButton(13, "Remov. Curse", EzekielCurseQuickFix).hint("Quick fix for Ezekiel curse when ezekiel fruit was lost.");
 
@@ -2163,6 +2169,35 @@ private function watchStars():void {
 //-----------------
 //-- REST
 //-----------------
+/*public function restMenu():void {
+	menu();
+	addButton(0, "1 Hour", rest1).hint("Rest for one hour.");
+	addButton(1, "2 Hours", rest2).hint("Rest for two hours.");
+	addButton(2, "4 Hours", rest4).hint("Rest for four hours.");
+	addButton(3, "8 Hours", rest8).hint("Rest for eight hours.");
+	addButton(4, "Till FH/M/HW", restTillFullyHealedMidnightOrHungerWake).hint("Rest until fully healed or midnight.");
+	addButton(14, "Back", playerMenu);
+}
+public function rest1():void {
+	waitingORresting = 1;
+	rest();
+}
+public function rest2():void {
+	waitingORresting = 2;
+	rest();
+}
+public function rest4():void {
+	waitingORresting = 4;
+	rest();
+}
+public function rest8():void {
+	waitingORresting = 8;
+	rest();
+}
+public function restTillFullyHealedMidnightOrHungerWake():void {
+	waitingORresting = 0;
+	rest();
+}*/
 public function rest():void {
 	campQ = true;
 	clearOutput();
@@ -2207,6 +2242,7 @@ public function rest():void {
 			if (timeQ > 21 - model.time.hours) timeQ = 21 - model.time.hours;
 		} else {
 			timeQ = Math.min(4, 21 - model.time.hours);
+			//timeQ = Math.min(waitingORresting, 21 - model.time.hours);
 			HPChange(timeQ * hpRecovery * multiplier, false);
 			fatigue(timeQ * -fatRecovery * multiplier);
 		}
@@ -2268,6 +2304,35 @@ public function rest():void {
 //-----------------
 //-- WAIT
 //-----------------
+/*public function doWaitMenu():void {
+	menu();
+	addButton(0, "1 Hour", doWait1).hint("Wait one hour.");
+	addButton(1, "2 Hours", doWait2).hint("Wait two hours.");
+	addButton(2, "4 Hours", doWait4).hint("Wait four hours.");
+	addButton(3, "8 Hours", doWait8).hint("Wait eight hours.");
+	addButton(4, "Till Dusk", doWaitTillDusk).hint("Wait until the night comes.");
+	addButton(14, "Back", playerMenu);
+}
+public function doWait1():void {
+	waitingORresting = 1;
+	doWait();
+}
+public function doWait2():void {
+	waitingORresting = 2;
+	doWait();
+}
+public function doWait4():void {
+	waitingORresting = 4;
+	doWait();
+}
+public function doWait8():void {
+	waitingORresting = 8;
+	doWait();
+}
+public function doWaitTillDusk():void {
+	waitingORresting = 21 - model.time.hours;
+	doWait();
+}*/
 public function doWait():void {
 	campQ = true;
 	clearOutput();
@@ -2283,6 +2348,7 @@ public function doWait():void {
 	if (timeQ == 0) {
 		timeQ = 4;
 		if (flags[kFLAGS.SHIFT_KEY_DOWN] > 0) timeQ = 21 - model.time.hours;
+		//timeQ = waitingORresting;
 		if (player.lowerBody == LowerBody.PLANT_FLOWER) outputText("You lie down in your pitcher, closing off your petals as you get comfortable for " + num2Text(timeQ) + " hours...\n");
 		else outputText("You wait " + num2Text(timeQ) + " hours...\n");
 		//Marble withdrawl
@@ -3835,14 +3901,65 @@ private function promptSaveUpdate():void {
 		doNext(doCamp);
 		return;
 	}
-/*	if (flags[kFLAGS.MOD_SAVE_VERSION] == 25) {
+	if (flags[kFLAGS.MOD_SAVE_VERSION] == 25) {
 		flags[kFLAGS.MOD_SAVE_VERSION] = 26;
 		clearOutput();
-		outputText("Text.");
+		outputText("For all those poor Jiangshi. Go forth young zombie and be alive again... with a bit of recompesation ;) Also Adventure Guld Quest counters. I heard some of you likes to know how many times you brough those blood dripping imp skulls to our cute panda girl so... here you go.");
+		if (flags[kFLAGS.CURSE_OF_THE_JIANGSHI] > 1) {
+			player.setWeapon(weapons.BFTHSWORD);
+			player.setWeaponRange(weaponsrange.AVELYNN);
+			player.setShield(shields.DRGNSHL);
+			player.setArmor(armors.LAYOARM);
+			flags[kFLAGS.HAIR_GROWTH_STOPPED_BECAUSE_LIZARD] = 0;
+			player.skinTone = "light";
+			player.faceType = Face.HUMAN;
+			player.eyes.type = Eyes.HUMAN;
+			player.horns.type = Horns.NONE;
+			player.horns.count = 0;
+			player.arms.type = Arms.HUMAN;
+			player.lowerBody = LowerBody.HUMAN;
+			if (player.hasPerk(PerkLib.HaltedVitals)) player.removePerk(PerkLib.HaltedVitals);
+			if (player.hasPerk(PerkLib.SuperStrength)) player.removePerk(PerkLib.SuperStrength);
+			if (player.hasPerk(PerkLib.PoisonNails)) player.removePerk(PerkLib.PoisonNails);
+			if (player.hasPerk(PerkLib.Rigidity)) player.removePerk(PerkLib.Rigidity);
+			if (player.hasPerk(PerkLib.LifeLeech)) player.removePerk(PerkLib.LifeLeech);
+			if (player.hasPerk(PerkLib.Undeath)) player.removePerk(PerkLib.Undeath);
+			if (player.hasPerk(PerkLib.EnergyDependent)) player.removePerk(PerkLib.EnergyDependent);
+			if (player.hasStatusEffect(StatusEffects.EnergyDependent)) player.removeStatusEffect(StatusEffects.EnergyDependent);
+			flags[kFLAGS.CURSE_OF_THE_JIANGSHI] = 0;
+		}
+		if (player.hasStatusEffect(StatusEffects.AdventureGuildQuests1)) {
+			player.createStatusEffect(StatusEffects.AdventureGuildQuestsCounter1, 0, 0, 0, 0);
+			if (player.statusEffectv1(StatusEffects.AdventureGuildQuests1) == 2) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter1, 1, 1);
+			if (player.statusEffectv1(StatusEffects.AdventureGuildQuests1) == 4) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter1, 1, 2);
+			if (player.statusEffectv1(StatusEffects.AdventureGuildQuests1) == 7) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter1, 1, 3);
+			if (player.statusEffectv2(StatusEffects.AdventureGuildQuests1) == 2) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter1, 2, 1);
+			if (player.statusEffectv2(StatusEffects.AdventureGuildQuests1) == 4) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter1, 2, 2);
+			if (player.statusEffectv2(StatusEffects.AdventureGuildQuests1) == 7) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter1, 2, 3);
+			if (player.statusEffectv3(StatusEffects.AdventureGuildQuests1) == 2) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter1, 3, 1);
+			if (player.statusEffectv3(StatusEffects.AdventureGuildQuests1) == 4) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter1, 3, 2);
+			if (player.statusEffectv3(StatusEffects.AdventureGuildQuests1) == 7) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter1, 3, 3);
+		}
+		if (player.hasStatusEffect(StatusEffects.AdventureGuildQuests2)) {
+			player.createStatusEffect(StatusEffects.AdventureGuildQuestsCounter2, 0, 0, 0, 0);
+			if (player.statusEffectv1(StatusEffects.AdventureGuildQuests2) == 2) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter2, 1, 1);
+			if (player.statusEffectv1(StatusEffects.AdventureGuildQuests2) == 4) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter2, 1, 2);
+			if (player.statusEffectv1(StatusEffects.AdventureGuildQuests2) == 7) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter2, 1, 3);
+			if (player.statusEffectv2(StatusEffects.AdventureGuildQuests2) == 2) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter2, 2, 1);
+			if (player.statusEffectv2(StatusEffects.AdventureGuildQuests2) == 4) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter2, 2, 2);
+			if (player.statusEffectv2(StatusEffects.AdventureGuildQuests2) == 7) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter2, 2, 3);
+		}
+		if (player.hasStatusEffect(StatusEffects.AdventureGuildQuests4)) {
+			player.createStatusEffect(StatusEffects.AdventureGuildQuestsCounter4, 0, 0, 0, 0);
+			if (player.statusEffectv1(StatusEffects.AdventureGuildQuests4) == 2) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter4, 1, 1);
+			if (player.statusEffectv1(StatusEffects.AdventureGuildQuests4) == 5) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter4, 1, 2);
+			if (player.statusEffectv2(StatusEffects.AdventureGuildQuests4) == 2) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter4, 2, 1);
+			if (player.statusEffectv2(StatusEffects.AdventureGuildQuests4) == 5) player.addStatusValue(StatusEffects.AdventureGuildQuestsCounter4, 2, 2);
+		}
 		doNext(doCamp);
 		return;
 	}
-	if (flags[kFLAGS.MOD_SAVE_VERSION] == 26) {
+/*	if (flags[kFLAGS.MOD_SAVE_VERSION] == 26) {
 		flags[kFLAGS.MOD_SAVE_VERSION] = 27;
 		clearOutput();
 		outputText("Text.");
@@ -4253,10 +4370,14 @@ private function updateAchievements():void {
 	if (helspawnFollower()) awardAchievement("Helspawn", kACHIEVEMENTS.GENERAL_HELSPAWN);
 	if (flags[kFLAGS.URTA_KIDS_MALES] + flags[kFLAGS.URTA_KIDS_FEMALES] + flags[kFLAGS.URTA_KIDS_HERMS] > 0) awardAchievement("Urta's True Lover", kACHIEVEMENTS.GENERAL_URTA_TRUE_LOVER);
 	if (flags[kFLAGS.CORRUPTED_MARAE_KILLED] > 0) awardAchievement("Godslayer", kACHIEVEMENTS.GENERAL_GODSLAYER);
-	if (followersCount() >= 7) awardAchievement("Follow the Leader", kACHIEVEMENTS.GENERAL_FOLLOW_THE_LEADER);//ponownie przeliczyć followers, lovers, slaves counter
-	if (loversCount() >= 8) awardAchievement("Gotta Love 'Em All", kACHIEVEMENTS.GENERAL_GOTTA_LOVE_THEM_ALL);
-	if (slavesCount() >= 4) awardAchievement("Meet Your " + player.mf("Master", "Mistress") , kACHIEVEMENTS.GENERAL_MEET_YOUR_MASTER);
-	if (followersCount() + loversCount() + slavesCount() >= 19) awardAchievement("All Your People are Belong to Me", kACHIEVEMENTS.GENERAL_ALL_UR_PPLZ_R_BLNG_2_ME);
+	if (followersCount() >= 7) awardAchievement("Follow the Leader (1)", kACHIEVEMENTS.GENERAL_FOLLOW_THE_LEADER);//ponownie przeliczyć followers, lovers, slaves counter
+	//if (followersCount() >= 14) awardAchievement("Follow the Leader (2)", kACHIEVEMENTS.GENERAL_FOLLOW_THE_LEADER);
+	if (loversCount() >= 8) awardAchievement("Gotta Love 'Em All (1)", kACHIEVEMENTS.GENERAL_GOTTA_LOVE_THEM_ALL);
+	//if (loversCount() >= 16) awardAchievement("Gotta Love 'Em All (2)", kACHIEVEMENTS.GENERAL_GOTTA_LOVE_THEM_ALL); na razie 15 lovers :(
+	if (slavesCount() >= 4) awardAchievement("Meet Your " + player.mf("Master", "Mistress") + " (1)", kACHIEVEMENTS.GENERAL_MEET_YOUR_MASTER);
+	//if (slavesCount() >= 8) awardAchievement("Meet Your " + player.mf("Master", "Mistress") + " (2)", kACHIEVEMENTS.GENERAL_MEET_YOUR_MASTER);
+	if (followersCount() + loversCount() + slavesCount() >= 19) awardAchievement("All Your People are Belong to Me (1)", kACHIEVEMENTS.GENERAL_ALL_UR_PPLZ_R_BLNG_2_ME);
+	//if (followersCount() + loversCount() + slavesCount() >= 38) awardAchievement("All Your People are Belong to Me (2)", kACHIEVEMENTS.GENERAL_ALL_UR_PPLZ_R_BLNG_2_ME);
 	if (flags[kFLAGS.MANSION_VISITED] >= 3) awardAchievement("Freeloader", kACHIEVEMENTS.GENERAL_FREELOADER);
 	if (player.perks.length >= 25) awardAchievement("Perky", kACHIEVEMENTS.GENERAL_PERKY);
 	if (player.perks.length >= 50) awardAchievement("Super Perky", kACHIEVEMENTS.GENERAL_SUPER_PERKY);
@@ -4328,6 +4449,7 @@ private function updateAchievements():void {
 	
 	if (player.hasPerk(PerkLib.GargoylePure) || player.hasPerk(PerkLib.GargoyleCorrupted)) awardAchievement("Guardian of Notre-Dame", kACHIEVEMENTS.EPIC_GUARDIAN_OF_NOTRE_DAME);
 	if (player.hasStatusEffect(StatusEffects.PlayerPhylactery)) awardAchievement("The Devil Wears Prada", kACHIEVEMENTS.EPIC_THE_DEVIL_WEARS_PRADA);
+	if (player.jiangshiScore() >= 20) awardAchievement("Thriller", kACHIEVEMENTS.EPIC_THRILLER);
 	
 	if (player.hasStatusEffect(StatusEffects.AchievementsNormalShadowTotal)) {
 		//Shadow
@@ -4357,4 +4479,3 @@ private function fixHistory():void {
 */
 }
 }
-

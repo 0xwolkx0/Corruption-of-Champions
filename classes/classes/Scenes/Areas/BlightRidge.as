@@ -63,15 +63,19 @@ use namespace CoC;
 				return;
 			}
 			//Alvina
-			if (flags[kFLAGS.ALVINA_FOLLOWER] < 12 && SceneLib.dungeons.checkDeepCaveClear() && ((rand(10) == 0) || (SceneLib.dungeons.checkLethiceStrongholdClear() && rand(2) == 0))) {
+			if (flags[kFLAGS.ALVINA_FOLLOWER] < 12 && player.hasKeyItem("Zetaz's Map") >= 0 && ((rand(10) == 0) || (flags[kFLAGS.LETHICE_DEFEATED] > 0 && rand(2) == 0))) {
 				SceneLib.alvinaFollower.alvinaThirdEncounter();
 				return;
 			}
-			if (((flags[kFLAGS.ALVINA_FOLLOWER] > 8 && flags[kFLAGS.ALVINA_FOLLOWER] < 12 && SceneLib.dungeons.checkDeepCaveClear()) || player.statusEffectv1(StatusEffects.SiegweirdTraining2) == 2) && rand(2) == 0) {
+			if (((flags[kFLAGS.ALVINA_FOLLOWER] > 8 && flags[kFLAGS.ALVINA_FOLLOWER] < 12 && player.hasKeyItem("Zetaz's Map") >= 0) || player.statusEffectv1(StatusEffects.SiegweirdTraining2) == 2) && rand(2) == 0) {
 				SceneLib.alvinaFollower.alvinaThirdEncounter();
 				return;
 			}
 			//Siegweird
+			if (player.statusEffectv1(StatusEffects.AlvinaTraining2) == 3 && flags[kFLAGS.SIEGWEIRD_FOLLOWER] < 3 && rand(4) == 0) {
+				SceneLib.siegweirdFollower.siegweirdFirstEncounter();
+				return;
+			}
 			if (flags[kFLAGS.SIEGWEIRD_FOLLOWER] < 2 && rand(4) == 0) {
 				SceneLib.siegweirdFollower.siegweirdFirstEncounter();
 				return;

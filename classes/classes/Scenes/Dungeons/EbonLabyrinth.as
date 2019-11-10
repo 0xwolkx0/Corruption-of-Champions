@@ -32,6 +32,8 @@ import classes.StatusEffects;
 		private static const DUNGEON_EBON_LABYRINTH_2:int	= 133;
 		private static const DUNGEON_EBON_LABYRINTH_3:int	= 134;
 		
+		private var _cuteScene:int = 1;
+		
 		public var elDisplacerbeast:DisplacerBeastScene = new DisplacerBeastScene();
 		public var ancientTentacleBeast:TentacleBeastScene = new TentacleBeastScene();
 		
@@ -78,7 +80,7 @@ import classes.StatusEffects;
 				cleanupAfterCombat();
 			}
 			else {
-				outputText("I will put here scene soon.\n\n");
+				//outputText("I will put here scene soon.\n\n");
 				cleanupAfterCombat();
 			}
 		}
@@ -97,14 +99,14 @@ import classes.StatusEffects;
 		}
 		public function defeatedByAncientTentacleBeast():void {
 			clearOutput();
-			outputText("Upon your defeat the tentacled fiends draw an appendage ending up with a nasty needle and force in your left side pouring into you transformative fluid.");
-			outputText(" Your chest begins to puff up growing up in size");
+			outputText("Upon your defeat the tentacled fiends draws an appendage ending with a nasty needle and forces it in your left side pouring transformative fluid into you.");
+			outputText(" Your chest begins to puff up, growing up in size");
 			if (player.biggestTitSize() < 1) outputText(" from nothing");
 			player.growTits(1 + rand(3), 1, false, 3);
 			outputText("! Milks churns inside ready for the harvest.");
 			player.boostLactation(1.5);
 			if (player.cocks.length == 0) {
-				outputText(" Just as you were thinking about your breast you feel a bump of flesh between your legs growing steadily until it breaks out standing erect. This… this thing is a penis!");
+				outputText(" Just as you were thinking about your breasts you feel a bump of flesh between your legs growing steadily until it breaks out standing erect. This… this thing is a penis!");
 				player.createCock();
 				player.cocks[0].cockLength = 6;
 				player.cocks[0].cockThickness = 1.5;
@@ -120,10 +122,10 @@ import classes.StatusEffects;
 				player.vaginas[0].vaginalWetness = VaginaClass.WETNESS_NORMAL;
 				player.vaginas[0].virgin = true;
 				player.clitLength = .25;
-				if (player.hasCock()) outputText(" Oh no your a full herm now!");
+				if (player.hasCock()) outputText(" Oh no you’re a full herm now!");
 			}
 			outputText("\n\nWhile you attempt to resist the abomination, its raw muscle mass is too much. It pins you to the ground easily. You immediately feel a sharp, horrible pain at the base of your ample cock. You look down to see the end of a thorny tendril impaled in your pelvic region. Fiery pain courses through your veins as you feel ");
-			outputText("the creature inject you with some sort of liquid. As the pain sears through you, your member immediately becomes fully erect and pre-cum leaks liberally from your tip.  Two thorny tentacles pierce your nipples, and you feel as if someone shot acid into your tits, which immediately begin to swell.\n\n");
+			outputText("the creature inject you with some sort of liquid. As the pain sears through you, your member immediately becomes fully erect and pre-cum leaks liberally from your tip. Two thorny tentacles pierce your nipples and you feel as if someone shot acid into your tits, which immediately begin to swell.\n\n");
 			outputText("Realizing what is about to happen, you try to struggle. The beast responds by slamming you to the ground a few times, stunning you. In your daze you see a monstrous, hollow tentacle poised over your furious cock. You scream in shock and protest, but your cries fall upon deaf ears. ");
 			outputText("The tentacle descends upon your nice cock, now begging for release, and clamps down upon your pubic mound, fully encapsulating your member.\n\n");
 			ancientTentacleBeast.futaTentacleBadEndEL();
@@ -185,6 +187,8 @@ import classes.StatusEffects;
 		public function defeatDarkSlimeEmpress():void {
 			clearOutput();
 			outputText("The empress’s purple legion falter for an instant, the slime blocking the exit falling off. You don't wait for the sovereign to recover her composure and rush for the exit, the empress screaming orders as you leave. Thankfully slimes are not overly fast and you manage to make it back to the corridor junction you came from.\n\n");
+			if (player.hasStatusEffect(StatusEffects.TFDealer1)) player.addStatusValue(StatusEffects.TFDealer1, 1, 1);
+			else player.createStatusEffect(StatusEffects.TFDealer1, 1, 0, 0, 0);
 			cleanupAfterCombat();
 		}
 		public function defeatedByHydra():void {
@@ -197,17 +201,31 @@ import classes.StatusEffects;
 		public function defeatHydra():void {
 			clearOutput();
 			outputText("You thought you had won but, to your frustration, the hydra just keeps on regenerating its wounds. It’s incapacitated for now but it could get back up ready to attack at anytime. You grab a token of her defeat and run for the room exit, back to the previous junction.\n\n");
+			if (player.hasStatusEffect(StatusEffects.TFDealer1)) player.addStatusValue(StatusEffects.TFDealer1, 2, 1);
+			else player.createStatusEffect(StatusEffects.TFDealer1, 0, 1, 0, 0);
 			cleanupAfterCombat();
 		}
-		public function defeatedByBoosNo3():void {
+		public function defeatedByHellfireSnail():void {
 			clearOutput();
-			outputText("\n\n");
-			//[GAME OVER]
-			EventParser.gameOver();
+			outputText("The snail girl catches you before you even hit the floor, a wide gooey smile on her face.\n\n");
+			outputText("\"<i>Aw, no need to be so aggressive, I know exactly what you need! A BIG warm hug!</i>\"\n\n");
+			if (player.hasPerk(PerkLib.FireAffinity)) {
+				outputText("No way, she's going to hug you!? You scream in panic trying to get free but it's pointless as she has you beneath her shell now. However friendly she is, your body isn't made to endure such crazy heat. Or is it? To your surprise you actually feel comfortable in her grasp and even begin to relax, returning the hug and gently imprinting your hands into her generous breasts.");
+				HellfireSnailSex();
+				monster.createPerk(PerkLib.NoGemsLost, 0, 0, 0, 0);
+				inventory.takeItem(consumables.FSNAILS, cleanupAfterCombat);
+			}
+			else {
+				outputText("No way, she's going to hug you!? You scream in panic, trying to get free but it's pointless as she has you beneath her shell now. However friendly she is, your body isn't made to endure such crazy heat. You perish in silence, your screams muffled by her massive chest as you pretty much disintegrate into her arms. You’re long dead before the lonely snail even realises she's hugging ashes.\n\n");
+				//[GAME OVER]
+				EventParser.gameOver();
+			}
 		}
-		public function defeatBoosNo3():void {
+		public function defeatHellfireSnail():void {
 			clearOutput();
-			outputText("\n\n");
+			outputText("You beat up the snail girl so hard her shell end upside down! She desperately tries to get back on her belly but is stuck swinging from side to side, you get the opportunity to run past her.\n\n");
+			if (player.hasStatusEffect(StatusEffects.TFDealer1)) player.addStatusValue(StatusEffects.TFDealer1, 3, 1);
+			else player.createStatusEffect(StatusEffects.TFDealer1, 0, 0, 1, 0);
 			cleanupAfterCombat();
 		}
 		public function defeatedByBoosNo4():void {
@@ -261,6 +279,7 @@ import classes.StatusEffects;
 				outputText("the right and, at the tip of its tail, the head of a snake! All four heads roar a warning at you as the beast stands up on its leonine legs, easily twelve feet tall, its massive wings opening in a threatening display revealing nothing short of four erect thirty inches cock already drooling precum!\n\n");
 				outputText("\"<i>Foolish intruder, you walked to your death! No one but me will ever touch the rose for it is mine and no one else's! I will rape you and then devour you alive!</i>\"\n\n");
 				outputText("<b>It's too late to run as you're fighting the chaos chimera!</b>");
+				player.createStatusEffect(StatusEffects.EbonLabyrinthBoss1, 1, 0, 0, 0);
 				startCombat(new ChaosChimera(), true);
 			}
 			else {
@@ -349,12 +368,14 @@ import classes.StatusEffects;
 			outputText("<b>It's too late to escape now, it's a fight!</b>");
 			startCombat(new DarkSlimeEmpress(), true);
 		}
-		private function encountersRuletteBossesEL1Hydra():void {
+		
+		public function encountersRuletteBossesEL1Hydra():void {
 			outputText("The first telltale that something might have gone really wrong is the hissing which seems to come from all around the room. The only warning you get of the impending attack is a sudden move of the shadows as a massive snake head bites the air mere inches from your face. You ready for battle as several huge snakes comes out of the shadow, each connected to a single junction to what appears to be the body of a very tall woman.\n\n");
 			if (player.isNaga()) {
 				outputText("\"<i>Why, would you look at that, how did you little grass snake make it all the way here. Are you perhaps lost?</i>\"\n\n");
 				outputText("Sometimes you forget that as a naga your body language allows you to understand snakes of all kinds. You reply to the hydra that you're exploring the labyrinth in search of power and treasures.\n\n");
 				outputText("\"<i>Um well there's no treasure I know of in this room but perhaps if you can help me with my arousal problem I’d be willing to give you something close to the first. A hydra scale, nothing short, nothing less. That is of course if becoming like me is of any interest to poor puny you. So how about it?</i>\"\n\n");
+				_cuteScene = 2;
 				menu();
 				addButton(1, "Sex", encountersRuletteBossesEL1HydraSex);
 				addButton(2, "Pass", encountersRuletteBossesEL1HydraPass);
@@ -365,30 +386,66 @@ import classes.StatusEffects;
 				startCombat(new Hydra(), true);
 			}
 		}
-		private function encountersRuletteBossesEL1HydraSex():void {
+		public function encountersRuletteBossesEL1HydraOthers():void {
+			outputText("She hisses in perfect coordination with the snakes, her slitted eyes fixating you obsessively, as a drooling gaping slit at the junction between the snakes and her human body tells you exactly what she wants from you. You don't feel you should indulge her however and as such ready to battle.\n\n");
+			startCombat(new Hydra(), true);
+		}
+		public function encountersRuletteBossesEL1HydraSex():void {
 			outputText("Clearly no cock in the world aside from those of a giant way bigger then your own size would ever fit her massive cunt. This said you got something way bigger then a cock. Her eyes widen and she drools from all six mouths in anticipation as you coil your tail around a nearby wooden log into a spring shape. You made a fleshy dildo three meters long and at least 20 inch thick just for her.\n\n");
 			outputText("Without asking for permission the horny hydra picks up your coiled tail and shove it inside her gaping maw of a cunt using your entire tail length up to the thigh to fuck herself like never before. You take great care not to uncoil your tail until your feel her clamping and drenching you all the way to the shoulder in giantess juices. The hydra, now fully satisfied pulls you out and depose you on the ground.\n\n");
 			outputText("\"<i>Oh god, it's been so long since I last touched myself. Here you may have this.</i>\"\n\n");
 			outputText("She hands you a large scale easily as big as your hand making it clear that you must eat it to gain its power before waving you off.\n\n");
 			outputText("\"<i>Stay safe down here little grass snake, not everyone is friendly and I’d hate to think you could be eaten.</i>\"\n\n");
-			inventory.takeItem(consumables.HUMMUS_, playerMenu);
+			_cuteScene = 1;
+			inventory.takeItem(consumables.HYDRASC, playerMenu);
 		}
-		private function encountersRuletteBossesEL1HydraPass():void {
+		public function encountersRuletteBossesEL1HydraPass():void {
 			outputText("You decline politely but say you will think about it. The semi disappointed hydra shrugs and lets you exit the room.\n\n");
+			_cuteScene = 1;
+			doNext(playerMenu);
 		}
-		private function encountersRuletteBossesEL1HydraFight():void {
+		public function encountersRuletteBossesEL1HydraFight():void {
+			_cuteScene = 1;
 			outputText("Wearing a crown seemingly made of goop, this regal purple woman sits on a pair of stone slabs which serves it as a makeshift throne.\n\n");
 			startCombat(new Hydra(), true);
 		}
-		private function encountersRuletteBossesEL1HellSnail():void {
-			outputText("You turn around the corner and come face to face with a greyish six armed catgirl. She would be terrifying already even without the two tentacles on her back that writhe in excitation. Readying for battle is the best you can do as the beast woman charges you with a gleam of hunger in her feral eyes.\n\n");
-			outputText("<b>It's placeholder enocunter to test procing boss fight!</b>");
-			startCombat(new DisplacerBeast(), true);
+		
+		public function encountersRuletteBossesEL1HellSnail():void {
+			if (player.hasPerk(PerkLib.FireAffinity) && flags[kFLAGS.HELLFIRE_SNAIL_ENC] == 1) {
+				outputText("You turn the corner expecting to run into yet another monster out to badly hurt you but sigh in relief as you run into the fire snail girl instead.\n\n");
+				outputText("\"<i>Hey it's you again. Having fun down there?</i>\"\n\n");
+				outputText("Well you could say that, in a way, yes you are having fun down there.\n\n");
+				outputText("\"<i>So uh I've been getting antsy of late could you help me out with…</i>\"\n\n");
+				outputText("You shut her up right away with a smoldering kiss of your own. Burning pleasure running down your spine as she cover you with her blanket like undercarriage. You return her hug by gently imprinting your hands into her generous breasts. ");
+				HellfireSnailSex();
+				inventory.takeItem(consumables.FSNAILS, playerMenu);
+			}
+			else {
+				outputText("As you turn the corner you run into what appears to be a massive rock blocking the passage. You try to move it but"+(player.tallness < 120 ? " to no avail the thing is as heavy as it looks. Your hand begins to burn up as":"")+" the rock suddenly raise in temperature and you swiftly remove them before being burnt. You are set on your guard as a feminine voice calls out.\n\n");
+				outputText("\"<i>Hey who's the pervert molesting my ass!?! This is most unfair! Share back the fun!</i>\"\n\n");
+				outputText("The rock now red with heat begins to seethe magma as something not unlike a reddish tail slides out from beneath it. On the other side the torso of a comely humanoid woman appears or you would call it human if not for the red skin, glowing ember eyes, drooling mouth and two antenna poking from the front atop her blazing hair! ");
+				outputText("The volcanic snail girl eyes you with the kind of drooly obsessed expression you've only seen on slime girls and her intentions become clear as day, she intends to force herself on you!\n\n");
+				if (flags[kFLAGS.HELLFIRE_SNAIL_ENC] < 1) flags[kFLAGS.HELLFIRE_SNAIL_ENC] = 1;
+				startCombat(new HellfireSnail(), true);
+			}
 		}
+		public function HellfireSnailSex():void {
+			outputText("The she snail giggle at your pleasant attention and begin to grind her lubricated pussy against "+(player.hasCock() ? "your burning cock" : "yours")+" in earnest. Blazing goop and other fluids begins to mingle as the two of you make it out the other residents of the labyrinth either oblivious or too scared to interfere with your smoldering mating session. ");
+			outputText("This might also be because the both of you spray fire and lava everywhere as part of mating and despite you both being immune to each other the unlooker likely wouldn't. The mating is deliberately slow, gentle and calculated with no single movement wasted as unlike most of Mareth denizen your current partner likes it nice and slow taking her time to make everything count.\n\n");
+			outputText("You reach your peak and erupt in orgasm your partner following short mere seconds after");
+			if (player.hasCock()) outputText(" as you fill her smoldering lovehole with "+player.race+" seeds");
+			if (!player.hasCock()) outputText(" as your girl juice mix with hers");
+			outputText(".\n\n\"<i>Uwaaa so long since last I had real sex, most of my partners dies before I even reach the climax. Thank you so much hun for helping me out.</i>\"\n\n");
+			outputText("Hey if this can help her be less of a hazard to everyone around her then why not, your glad she appreciates it.\n\n");
+			outputText("\"<i>Hey before you go have a vial of this, I don't know if you will find it useful but who knows.</i>\"\n\n");
+			outputText("She hands you a vial of her saliva before you head out back in the labyrinth and resume your exploration.\n\n");
+			player.orgasm();
+		}
+		
 		private function encountersRuletteBossesEL2():void {
 			player.createStatusEffect(StatusEffects.ThereCouldBeOnlyOne, 0, 0, 0, 0);
 			outputText("You turn around the corner and come face to face with a greyish six armed catgirl. She would be terrifying already even without the two tentacles on her back that writhe in excitation. Readying for battle is the best you can do as the beast woman charges you with a gleam of hunger in her feral eyes.\n\n");
-			outputText("<b>It's placeholder enocunter to test procing boss fight!</b>");
+			outputText("<b>It's placeholder encounter to test procing boss fight!</b>");
 			startCombat(new DisplacerBeast(), true);
 		}
 		private function encountersRuletteEL():void {
@@ -402,8 +459,7 @@ import classes.StatusEffects;
 					outputText("You turn around the corner and come face to face with a greyish six armed catgirl. She would be terrifying already even without the two tentacles on her back that writhe in excitation. Readying for battle is the best you can do as the beast woman charges you with a gleam of hunger in her feral eyes.");
 					startCombat(new DisplacerBeast(), true);
 				}
-				if (choice >= 1 && choice < 5) {
-				//if (choice == 1) {
+				if (choice == 1) {
 					//spriteSelect(25);
 					if (player.gooScore() >= 11 || player.magmagooScore() >= 13 || player.darkgooScore() >= 13) {
 						outputText("You take the turn at the end of the corridor and run right into a dark slime. For a few second the both of you consider each other before the slime shrugs and simply asks.\n\n");
@@ -417,7 +473,7 @@ import classes.StatusEffects;
 						outputText("\"<i>Dinner is served! Your fluids are mine, so surrender them now intruder and I promise to make it very pleasurable for you!</i>\"");
 						startCombat(new DarkSlime(), true);
 					}
-				}/*
+				}
 				if (choice == 2) {
 					clearOutput();
 					outputText("You run right into a demon. The fiend look at you confused, then attacks with glee.");
@@ -436,7 +492,7 @@ import classes.StatusEffects;
 					clearOutput();
 					outputText("You run right into a demon. The fiend look at you confused, then attacks with glee.");
 					startCombat(new Omnibus(), true);
-				}*/
+				}
 				if (choice == 5) {
 					clearOutput();
 					outputText("You’ve barely walked yourself into the corridor when you spot a tentacle beast of absurd size rushing right at you, it looks hungry!");
@@ -558,7 +614,7 @@ import classes.StatusEffects;
 			dungeonLoc = 131;
 			clearOutput();
 			checkingTodayMenu();
-			if (CoC.instance.inCombat) return;
+			if (CoC.instance.inCombat || _cuteScene == 2) return;
 			checkingELAchievs();
 			outputText("<b><u>Corridor</u></b>\n");
 			outputText("You walk into an empty corridor thankfully it seems to be void of monsters so far.");
@@ -569,7 +625,7 @@ import classes.StatusEffects;
 			dungeonLoc = 132;
 			clearOutput();
 			checkingTodayMenu();
-			if (CoC.instance.inCombat) return;
+			if (CoC.instance.inCombat || _cuteScene == 2) return;
 			checkingELAchievs();
 			outputText("<b><u>Corridor</u></b>\n");
 			outputText("You turn the corner wandering into a new corridor which thankfully seems to be void of monsters so far.");
@@ -580,7 +636,7 @@ import classes.StatusEffects;
 			dungeonLoc = 133;
 			clearOutput();
 			checkingTodayMenu();
-			if (CoC.instance.inCombat) return;
+			if (CoC.instance.inCombat || _cuteScene == 2) return;
 			checkingELAchievs();
 			outputText("<b><u>Corridor</u></b>\n");
 			outputText("You walk into an empty corridor thankfully it seems to be void of monsters so far.");
@@ -591,7 +647,7 @@ import classes.StatusEffects;
 			dungeonLoc = 134;
 			clearOutput();
 			checkingTodayMenu();
-			if (CoC.instance.inCombat) return;
+			if (CoC.instance.inCombat || _cuteScene == 2) return;
 			checkingELAchievs();
 			outputText("<b><u>Corridor</u></b>\n");
 			outputText("You turn the corner wandering into a new corridor which thankfully seems to be void of monsters so far.");
@@ -617,11 +673,11 @@ import classes.StatusEffects;
 			else if ((player.statusEffectv1(StatusEffects.EbonLabyrinthB) == 50 || player.statusEffectv1(StatusEffects.EbonLabyrinthB) == 100 || player.statusEffectv1(StatusEffects.EbonLabyrinthB) == 150) && !player.hasStatusEffect(StatusEffects.ThereCouldBeOnlyOne)) {
 				player.addStatusValue(StatusEffects.EbonLabyrinthA, 1, 10);
 				encountersRuletteBossesEL1();
-			}
+			}/*
 			else if ((player.statusEffectv1(StatusEffects.EbonLabyrinthB) == 200 || player.statusEffectv1(StatusEffects.EbonLabyrinthB) == 250 || player.statusEffectv1(StatusEffects.EbonLabyrinthB) == 300) && !player.hasStatusEffect(StatusEffects.ThereCouldBeOnlyOne)) {
 				player.addStatusValue(StatusEffects.EbonLabyrinthA, 1, 10);
 				encountersRuletteBossesEL2();
-			}
+			}*/
 			else encountersRuletteEL();
 		}
 		public function checkingELAchievs():void {
