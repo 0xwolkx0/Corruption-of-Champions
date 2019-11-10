@@ -57,6 +57,7 @@ public class Combat extends BaseContent {
 	public var comfoll:CombatFollowersActions	= new CombatFollowersActions();
 	public var ui:CombatUI						= new CombatUI();
 	public var MDODialogs:Boolean = false; // JA dialogs, look 3875
+	public var MDODialogsCrit:Boolean = false; // Cause I don't know how to fix this bug another way. Use for using crit in another functions... well, actially just look at the line 3273
 	public var MDOCount:int = 0; // count of how many times damage was deal
 	public var MSGControll:Boolean = false; // need to correctly display damage MSG
 	public var MSGControll1:Boolean = false; // need to correctly display damage MSG
@@ -498,7 +499,7 @@ public function combatMenu(newRound:Boolean = true):void { //If returning from a
 	}
 	MDOCount = 0;
 	MSGControll = false;
-	MSGControll1 = true;
+	MSGControll1 = false;
 	MSGControllForEvasion = false;
 	isBowDamageMDO = false;
 	flags[kFLAGS.IN_COMBAT_USE_PLAYER_WAITED_FLAG] = 0;
@@ -2164,7 +2165,6 @@ public function multiArrowsStrike():void {
 				else if (flags[kFLAGS.ELEMENTAL_ARROWS] == 3) damage = doLightingDamage(damage, true, true);
 				else if (flags[kFLAGS.ELEMENTAL_ARROWS] == 4) damage = doDarknessDamage(damage, true, true);
 				else damage = doDamage(damage, true, true);
-				MSGControll = true;
 			}
 			if (crit == true) outputText(" <b>*Critical Hit!*</b>");
 			heroBaneProc(damage);
@@ -2175,8 +2175,6 @@ public function multiArrowsStrike():void {
 				if ((MDOCount == maxCurrentRangeAttacks()) && (MSGControll == false)) outputText("It has no effect!  Your foe clearly does not experience lust in the same way as you.");
 			}
 			else {
-				if (MSGControll == false) {
-					MSGControll = true;
 				var lustArrowDmg:Number = monster.lustVuln * (player.inte / 5 * spellMod() + rand(monster.lib - monster.inte * 2 + monster.cor) / 5);
 				if (monster.lust < (monster.maxLust() * 0.3)) outputText(monster.capitalA + monster.short + " squirms as the magic affects [monster him].  ");
 				if (monster.lust >= (monster.maxLust() * 0.3) && monster.lust < (monster.maxLust() * 0.6)) {
@@ -2187,7 +2185,6 @@ public function multiArrowsStrike():void {
 					outputText(monster.capitalA + monster.short + "'");
 					if(!monster.plural) outputText("s");
 					outputText(" eyes glaze over with desire for a moment.  ");
-				}
 				}
 				lustArrowDmg *= 0.25;
 				lustArrowDmg = Math.round(lustArrowDmg);
@@ -2477,7 +2474,6 @@ public function throwWeapon():void {
 			if (MSGControll == false) {
 				outputText(".  It's clearly very painful. >");
 				damage = doDamage(damage, true, true);
-				MSGControll = true;
 			}
 			if (crit == true) outputText(" <b>*Critical Hit!*</b>");
 			outputText("\n\n");
@@ -2506,6 +2502,7 @@ public function throwWeapon():void {
 }
 
 public function shootWeapon():void {
+	MDOCount++;
 	var accRange:Number = 0;
 	accRange += (firearmsAccuracy() / 2);
 	if (flags[kFLAGS.ARROWS_ACCURACY] > 0) accRange -= flags[kFLAGS.ARROWS_ACCURACY];
@@ -2560,17 +2557,17 @@ public function shootWeapon():void {
 				outputText("The bullet bounces harmlessly off [monster a] [monster name].\n\n");
 			}
 		}
-		if (monster.short == "pod") {
+		if ((monster.short == "pod") && (MDOCount = 1)) {
 			outputText("The bullet lodges deep into the pod's fleshy wall");
 			if (player.isInGoblinMech()) {
 				if (player.hasKeyItem("Repeater Gun") >= 0) outputText("You shoot pod using the mech’s repeater gun for ");
 				if (player.hasKeyItem("Machine Gun MK1") >= 0 || player.hasKeyItem("Machine Gun MK2") >= 0 || player.hasKeyItem("Machine Gun MK3") >= 0) outputText("You fire metal rounds at pod using the mech’s machine gun for ");
 			}
 		}
-		else if (monster.plural) {
+		else if ((monster.plural)&&(MDOCount = 1)) {
 			if (player.isInGoblinMech()) {
 				if (player.hasKeyItem("Repeater Gun") >= 0) outputText("You shoot your opponent using the mech’s repeater gun for ");
-				if (player.hasKeyItem("Machine Gun MK1") >= 0 || player.hasKeyItem("Machine Gun MK2") >= 0 || player.hasKeyItem("Machine Gun MK3") >= 0) outputText("You fire metal rounds at [monster a] [monster name] using the mech’s machine gun for ");
+				if (player.hasKeyItem("Machine Gun MK1") >= 0 || player.hasKeyItem("Machine Gun MK2") >= 0 || player.hasKeyItem("Machine Gun MK3") >= 0) outputText("You fire metal rounds at [monster a] [monster name] using the mech’s machine gun for damage ");
 			}
 			else {
 				var textChooser1:int = rand(12);
@@ -2588,10 +2585,10 @@ public function shootWeapon():void {
 				}
 			}
 		}
-		else {
+		else if (MDOCount == 1) {
 			if (player.isInGoblinMech()) {
 				if (player.hasKeyItem("Repeater Gun") >= 0) outputText("You shoot your opponent using the mech repeater gun for ");
-				if (player.hasKeyItem("Machine Gun MK1") >= 0 || player.hasKeyItem("Machine Gun MK2") >= 0 || player.hasKeyItem("Machine Gun MK3") >= 0) outputText("You fire metal rounds at [monster a] [monster name] using the mech machine gun for ");
+				if (player.hasKeyItem("Machine Gun MK1") >= 0 || player.hasKeyItem("Machine Gun MK2") >= 0 || player.hasKeyItem("Machine Gun MK3") >= 0) outputText("You fire metal rounds at [monster a] [monster name] using the mech machine gun for damage ");
 			}
 			else {
 				var textChooser2:int = rand(12);
@@ -2655,7 +2652,10 @@ public function shootWeapon():void {
 			if (monster.hasPerk(PerkLib.IceVulnerability)) damage *= 5;
 			if (monster.hasPerk(PerkLib.FireNature)) damage *= 2;
 		}zachowane jeśli potem dodam elemental dmg do ataków innych broni dystansowych też*/
+		MDOCount--; // cause strange sh*t happens otherwise
 		damage = Math.round(damage);
+		damage = doDamage(damage, true, true);
+		if (crit == true) outputText(" <b>*Critical Hit!*</b>");
 		checkAchievementDamage(damage);
 		if (monster.HP <= monster.minHP()) {
 			if (monster.short == "pod")
@@ -2663,21 +2663,19 @@ public function shootWeapon():void {
 			else if (monster.plural)
 				outputText(" and [monster he] stagger, collapsing onto each other from the wounds you've inflicted on [monster him]. ");
 			else outputText(" and [monster he] staggers, collapsing from the wounds you've inflicted on [monster him]. ");
-			damage = doDamage(damage, true, true);
-			if (crit == true) outputText(" <b>*Critical Hit!*</b>");
 			outputText("\n\n");
 			doNext(endHpVictory);
 			return;
 		}
 		else {
-			if (player.isInGoblinMech() && (player.hasKeyItem("Repeater Gun") >= 0 || player.hasKeyItem("Machine Gun MK1") >= 0 || player.hasKeyItem("Machine Gun MK2") >= 0 || player.hasKeyItem("Machine Gun MK3") >= 0)) outputText(" damage.");
+			if (player.isInGoblinMech() && (player.hasKeyItem("Repeater Gun") >= 0 || player.hasKeyItem("Machine Gun MK1") >= 0 || player.hasKeyItem("Machine Gun MK2") >= 0 || player.hasKeyItem("Machine Gun MK3") >= 0)){
+			}
 			else {
-				outputText(".  It's clearly very painful. <b>(<font color=\"#800000\">" + String(damage) + "</font>)</b>");
+				if (MDOCount == 1) outputText(".  It's clearly very painful. <b>(<font color=\"#800000\">" + String(damage) + "</font>)</b>");
 				if (crit == true) outputText(" <b>*Critical Hit!*</b>");
 			//	if (flaga dla efektu arouse arrow) outputText(" tekst dla arouse arrow effect.");
 			//	if (flaga dla efektu poison arrow) outputText(" tekst dla poison arrow effect.");
 			}
-			outputText("\n\n");
 			heroBaneProc(damage);
 		}
 	}
@@ -2991,7 +2989,7 @@ public function attack():void {
 				if (rand(2) == 0) outputText("You slice through the air with your cane, completely missing your enemy.");
 				else outputText("You lunge at your enemy with the cane.  It glows with a golden light but fails to actually hit anything.");
 			}
-			if (MSGControll1 == false) {
+			if (MSGControll == false) {
 				if(monster.spe - player.spe < 8) outputText(monster.capitalA + monster.short + " narrowly avoids your attack!");
 				if(monster.spe - player.spe >= 8 && monster.spe-player.spe < 20) outputText(monster.capitalA + monster.short + " dodges your attack with superior quickness!");
 				if (monster.spe - player.spe >= 20) outputText(monster.capitalA + monster.short + " deftly avoids your slow attack.");
@@ -3273,9 +3271,11 @@ public function meleeDamageAcc():void {
 			}
 			else if (MSGControll == false) {
 				outputText("You hit [monster a] [monster name]! "); // for not displaying the same msg a lot of times.
-				MSGControll = true;
 			}
-			if (crit == true) {
+			if (MDODialogs) {
+				MDODialogsCrit = crit;
+			}
+			else if (crit == true) {
 				outputText("<b>Critical! </b>");
 				if (player.hasStatusEffect(StatusEffects.Rage)) player.removeStatusEffect(StatusEffects.Rage);
 			}
@@ -3910,6 +3910,10 @@ public function DamageOverhaul(damage:Number):Number {
 					if (random_value == higher_threshold) outputText("You found a gap in [monster a] [monster name]'s defence. Using perfect timing, you put all your strength to break through it! ");
 				} 
 		}
+		if (MDODialogsCrit == true) {
+			outputText("<b>Critical! </b>");
+			if (player.hasStatusEffect(StatusEffects.Rage)) player.removeStatusEffect(StatusEffects.Rage);
+		}
 	random_value /= 100; // back to %
 	// damage math
 	
@@ -3961,15 +3965,18 @@ public function doDamage(damage:Number, apply:Boolean = true, display:Boolean = 
 	if (damage < 0) damage = 1;
 	if (apply) {
 		monster.HP -= damage;
-		MSGControll1 = true;
+		MSGControll = true;
 		if (monster.hasPerk(PerkLib.FuelForTheFire)) monster.wrath += Math.round(damage / 5);
 		else monster.wrath += Math.round(damage / 10);
 		if (monster.wrath > monster.maxWrath()) monster.wrath = monster.maxWrath();
 	}
 	if (display) {
-		if (damage > 0) outputText("<b>(<font color=\"#800000\">" + damage + "</font>)</b>"); //Damage
-		else if (damage == 0) outputText("<b>(<font color=\"#000080\">" + damage + "</font>)</b>"); //Miss/block
-		else if (damage < 0) outputText("<b>(<font color=\"#008000\">" + damage + "</font>)</b>"); //Heal
+		if (damage > 1000) CommasForDigits(damage);
+		else {
+			if (damage > 0) outputText("<b>(<font color=\"#800000\">" + damage + "</font>)</b>"); //Damage
+			else if (damage == 0) outputText("<b>(<font color=\"#000080\">" + damage + "</font>)</b>"); //Miss/block
+			else if (damage < 0) outputText("<b>(<font color=\"#008000\">" + damage + "</font>)</b>"); //Heal
+		}
 	}
 	//Isabella gets mad
 	if (monster.short == "Isabella") {
